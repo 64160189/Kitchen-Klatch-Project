@@ -98,7 +98,7 @@
         </div>
         <div>
             <a href="/login"><button class="login-btn">LOG IN</button></a>
-            <a href="/posting"><button style="margin-left: 10px;">Post</button></a>
+            <a href="/create"><button style="margin-left: 10px;">Post</button></a>
         </div>
     </header>
 

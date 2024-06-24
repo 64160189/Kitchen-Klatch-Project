@@ -3,13 +3,16 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\postcontroller;
 
-Route::get('/',[postcontroller::class,'showpost']);
+Route::get('/',[postcontroller::class,'showPost']);
 
-Route::get('/posting', function () {
+Route::get('/create', function () {
     return view('create');
 });
 
-Route::post('/insert',[postcontroller::class,'insert']);
+Route::post('/insert', [PostController::class, 'storePost'])->name('post.store');
+
+Route::get('/posts', [PostController::class, 'fetchPosts']);
+
 
 /*
 Route::get('/', function () {

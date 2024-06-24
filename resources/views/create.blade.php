@@ -33,16 +33,12 @@
     <div class="container">
         <h2>แบ่งปันสูตรอาหารของคุณ</h2>
         <form class="form-group" method="POST" enctype="multipart/form-data" action="/insert">
+            @csrf
             <div class="mb-3">
                 <label for="title" class="form-label">ชื่อเมนู</label>
                 <input type="text" class="form-control" id="title" name="title"
                     placeholder="โปรดใส่ชื่อเมนูของคุณ" required>
             </div>
-            @error('title')
-                <div class="my-2">
-                    <span>{{ message }}</span>
-                </div>
-            @enderror
             <div class="mb-3">
                 <label for="description" class="form-label">คำอธิบาย</label>
                 <textarea class="form-control" id="description" name="description" cols="75" rows="5"
@@ -73,6 +69,7 @@
             <input type="submit" value="เผยแพร่" class="btn btn-danger">
             <a href="/" class="btn btn-light">ออก</a>
         </form>
+
     </div>
 </body>
 
