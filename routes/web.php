@@ -32,8 +32,3 @@ Route::get('/login/forgot/resetpw/emailkimhun/jringjringna', function () {
 Route::fallback(function(){
     return "<h1>ไม่มี path นี้ในระบบ</h1> <a href='/'>Home<a>";
 });
-
-Auth::routes();
-
-Route::get('/', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
-Route::get('admin/home', [HomeController::class,'adminHome'])->name ('admin.home')->middleware('is_admin');
