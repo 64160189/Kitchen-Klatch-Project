@@ -1,4 +1,4 @@
-@extends('layout') <!-- header from layout -->
+@extends('layout') <!-- header from layouts/app -->
 @section('title')
     Home
 @endsection <!-- title from layout -->
@@ -58,11 +58,21 @@
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
         }
 
+        .post-frame:hover {
+            cursor: pointer;
+        }
+
         .post-frame img {
             display: block;
             margin: 0 auto;
         }
     </style>
+
+    <script>
+        function goToPost(id) {
+            window.location.href = '/post/' + id;
+        }
+    </script>
 </head>
 
 <body>
@@ -70,12 +80,14 @@
         <div class="left-sidebar">
             <h2>Search from ingredients (Position: Fixed)</h2>
         </div>
+
         <div class="main-content">
             <div class="content-area">
                 <h1>Posts</h1>
+
                 <div id="post-container">
                     @foreach ($posts as $item)
-                        <div class="post-frame">
+                        <div class="post-frame" onclick="goToPost({{ $item->id }})">
                             <img src="{{ asset('storage/' . $item->image) }}" alt="{{ $item->title }}"
                                 style="width:100%; height:auto;">
                             <h2>{{ $item->title }}</h2>
@@ -108,6 +120,10 @@
                             data.data.forEach(post => {
                                 const postFrame = document.createElement('div');
                                 postFrame.classList.add('post-frame');
+
+                                postFrame.setAttribute('onclick',
+                                    `goToPost(${post.id})`); //onclick function
+
                                 postFrame.innerHTML = `
                                     <img src="/storage/${post.image}" alt="${post.title}" style="width:100%; height:auto;">
                                     <h2>${post.title}</h2>
@@ -126,6 +142,10 @@
                 });
             }
         });
+
+        function goToPost(id) {
+            window.location.href = `/post/${id}`;
+        }
     </script>
 </body>
 

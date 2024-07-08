@@ -1,4 +1,4 @@
-@extends('layout') <!-- header from layout -->
+@extends('layout') <!-- header from layouts/app -->
 @section('title')
     posting
 @endsection <!-- title from layout -->
@@ -48,6 +48,7 @@
                 <label for="image" class="form-label">รูปภาพ</label>
                 <input type="file" class="form-control" id="image" name="image" required>
             </div>
+
             <div class="mb-3">
                 <label for="ingredient" class="form-label">วัตถุดิบ</label>
                 <textarea class="form-control" id="ingredient" name="ingredient" cols="75" rows="5"
@@ -66,8 +67,13 @@
 3.ปรุงรส"
                     required></textarea>
             </div>
+            <div class="mb-3">
+                <label for="youtube_link" class="form-label">ลิงค์วิดีโอ YouTube "ถ้ามี"</label>
+                <input type="text" class="form-control" id="youtube_link" name="youtube_link"
+                    placeholder="โปรดใส่ลิงค์วิดีโอ YouTube ของคุณ (ถ้ามี)">
+            </div>
             <input type="submit" value="เผยแพร่" class="btn btn-danger">
-            <a href="/" class="btn btn-light">ออก</a>
+            <a onclick="window.history.back();" class="btn btn-light">ออก</a>
         </form>
 
     </div>

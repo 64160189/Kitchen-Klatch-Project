@@ -13,6 +13,8 @@ Route::post('/insert', [PostController::class, 'storePost'])->name('post.store')
 
 Route::get('/posts', [PostController::class, 'fetchPosts']);
 
+Route::get('/post/{id}', [PostController::class, 'showFullPost'])->name('post.show');
+
 
 /*
 Route::get('/', function () {

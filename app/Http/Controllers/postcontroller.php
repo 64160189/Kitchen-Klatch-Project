@@ -22,6 +22,20 @@ class postcontroller extends Controller
         return view('home', compact('posts'));
     }
 
+    public function fetchPosts(Request $request){
+        // Fetch posts ordered by id in descending order and paginate
+        $posts = DB::table('post_models')->orderBy('id', 'desc')->paginate(5);
+
+        // Decode the JSON fields for each post
+        foreach ($posts as $post) {
+            $post->ingrediant = json_decode($post->ingrediant, true);
+            $post->htc = json_decode($post->htc, true);
+        }
+
+        // Return the posts as JSON
+        return response()->json($posts);
+    }
+
     public function storePost(Request $request){
         // Validate the request data
         $request->validate([
@@ -30,6 +44,7 @@ class postcontroller extends Controller
             'image' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
             'ingredient' => 'required|string',
             'htc' => 'required|string',
+            'youtube_link' => 'nullable|url'
         ]);
 
         // Convert ingredients and htc to JSON format
@@ -46,26 +61,26 @@ class postcontroller extends Controller
             'title' => $request->input('title'),
             'description' => $request->input('description'),
             'image' => $imagePath ?? '',
-            'ingrediant' => json_encode($ingredients),
-            'htc' => json_encode($htc),
+            'ingrediant' => json_encode($ingredients, JSON_UNESCAPED_UNICODE),
+            'htc' => json_encode($htc, JSON_UNESCAPED_UNICODE),
+            'youtube_link' => $request->input('youtube_link'),
         ]);
         
         // Redirect to a success page or home
         return redirect('/')->with('success', 'Post created successfully.');
     }
 
-    public function fetchPosts(Request $request){
-        // Fetch posts ordered by id in descending order and paginate
-        $posts = DB::table('post_models')->orderBy('id', 'desc')->paginate(5);
+    public function showFullPost($id){
+        $post = DB::table('post_models')->where('id', $id)->first();
 
-        // Decode the JSON fields for each post
-        foreach ($posts as $post) {
-            $post->ingrediant = json_decode($post->ingrediant, true);
-            $post->htc = json_decode($post->htc, true);
+        if (!$post) {
+            abort(404);
         }
 
-        // Return the posts as JSON
-        return response()->json($posts);
-    }
+        $post->ingrediant = json_decode($post->ingrediant, true);
+        $post->htc = json_decode($post->htc, true);
 
+        return view('fullPost', compact('post'));
+    }
+    
 }

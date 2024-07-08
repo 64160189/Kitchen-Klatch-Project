@@ -18,6 +18,7 @@ return new class extends Migration
             $table->text('image');
             $table->text('ingrediant');
             $table->text('htc');
+            $table->text('youtube_link');
             $table->timestamps();
         });
     }

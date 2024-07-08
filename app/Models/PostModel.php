@@ -15,5 +15,6 @@ class PostModel extends Model
         'image',
         'ingrediant',
         'htc',
+        'youtube_link',
     ];
 }
