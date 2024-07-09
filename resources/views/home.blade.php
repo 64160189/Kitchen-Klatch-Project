@@ -1,45 +1,14 @@
-@extends('layout') <!-- header from layouts/app -->
-@section('title')
-    Home
-@endsection <!-- title from layout -->
+@extends('layouts.app')
 
-<!DOCTYPE html>
-<html lang="en">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
+@section('content')
     <style>
-        body {
-            margin: 0;
-            font-family: Arial, sans-serif;
-            display: flex;
-            flex-direction: column;
-            height: 100vh;
-        }
-
-        .container {
-            display: flex;
-            flex-grow: 1;
-            overflow: hidden;
-            margin-top: 60px;
-        }
-
         .left-sidebar {
-            background-color: lightgreen;
             position: fixed;
-            top: 60px;
-            left: 0;
-            bottom: 0;
-            width: 30%;
-            overflow-y: auto;
+            bottom: 0px;
+            top: 100px;
         }
 
         .main-content {
-            margin-left: 30%;
-            padding: 10px;
-            overflow-y: auto;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -50,64 +19,52 @@
             min-width: 300px;
         }
 
-        .post-frame {
-            margin-bottom: 20px;
-            background: #F2F2F2;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
-        }
-
         .post-frame:hover {
             cursor: pointer;
         }
-
-        .post-frame img {
-            display: block;
-            margin: 0 auto;
-        }
     </style>
 
-    <script>
-        function goToPost(id) {
-            window.location.href = '/post/' + id;
-        }
-    </script>
-</head>
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-3 left-sidebar bg-danger"
+                style="bottom: 0; display: flex; flex-direction: column; align-items: center;">
+                <h2>Search from ingredients (Position: Fixed)</h2>
+            </div>
 
-<body>
-    <div class="container">
-        <div class="left-sidebar">
-            <h2>Search from ingredients (Position: Fixed)</h2>
-        </div>
+            <div class="col-3"></div>
 
-        <div class="main-content">
-            <div class="content-area">
-                <h1>Posts</h1>
+            <div class="col main-content">
+                <div class="content-area">
+                    <h1>Posts</h1>
 
-                <div id="post-container">
-                    @foreach ($posts as $item)
-                        <div class="post-frame" onclick="goToPost({{ $item->id }})">
-                            <img src="{{ asset('storage/' . $item->image) }}" alt="{{ $item->title }}"
-                                style="width:100%; height:auto;">
-                            <h2>{{ $item->title }}</h2>
-                            <p>{{ Str::limit($item->description, 50) }}</p>
-                            <h3>วัตถุดิบ:</h3>
-                            <p>{{ Str::limit(implode(', ', $item->ingrediant), 50) }}</p>
-                        </div>
-                    @endforeach
-                </div>
-                @if ($posts->hasMorePages())
-                    <div class="d-flex justify-content-center">
-                        <button id="load-more" class="btn btn-primary" data-page="{{ $posts->currentPage() + 1 }}">Load
-                            More</button>
+                    <div id="post-container">
+                        @foreach ($posts as $item)
+                            <div class="post-frame card mb-4 shadow bg-secondary-subtle"
+                                onclick="goToPost({{ $item->id }})">
+                                <img class="card-img-top" src="{{ asset('storage/' . $item->image) }}"
+                                    alt="{{ $item->title }}" style="width:100%; height:auto;">
+                                <div class="card-body">
+                                    <h2 class="card-title">{{ $item->title }}</h2>
+                                    <p class="card-text">{{ Str::limit($item->description, 50) }}</p>
+                                    <h3 class="card-text">วัตถุดิบ:</h3>
+                                    <p class="card-text">{{ Str::limit(implode(', ', $item->ingrediant), 50) }}</p>
+                                </div>
+                            </div>
+                        @endforeach
                     </div>
-                @endif
+                    @if ($posts->hasMorePages())
+                        <div class="d-flex justify-content-center">
+                            <button id="load-more" class="btn btn-danger" data-page="{{ $posts->currentPage() + 1 }}">Load
+                                More</button>
+                        </div>
+                    @endif
+                </div>
             </div>
         </div>
     </div>
 
     <script>
+        // Load more script
         document.addEventListener('DOMContentLoaded', function() {
             const loadMoreButton = document.getElementById('load-more');
             if (loadMoreButton) {
@@ -119,18 +76,21 @@
                             const postContainer = document.getElementById('post-container');
                             data.data.forEach(post => {
                                 const postFrame = document.createElement('div');
-                                postFrame.classList.add('post-frame');
+                                postFrame.classList.add('post-frame', 'card', 'mb-4', 'shadow',
+                                    'bg-secondary-subtle');
 
                                 postFrame.setAttribute('onclick',
-                                    `goToPost(${post.id})`); //onclick function
+                                    `goToPost(${post.id})`); // Onclick function
 
                                 postFrame.innerHTML = `
-                                    <img src="/storage/${post.image}" alt="${post.title}" style="width:100%; height:auto;">
-                                    <h2>${post.title}</h2>
-                                    <p>${post.description.substring(0, 50)}...</p>
-                                    <h3>วัตถุดิบ:</h3>
-                                    <p>${post.ingrediant.join(', ').substring(0, 50)}...</p>
-                                `;
+                                <img class="card-img-top" src="/storage/${post.image}" alt="${post.title}" style="width:100%; height:auto;">
+                                <div class="card-body">
+                                    <h2 class="card-title">${post.title}</h2>
+                                    <p class="card-text">${post.description.substring(0, 50)}...</p>
+                                    <h3 class="card-text">วัตถุดิบ:</h3>
+                                    <p class="card-text">${post.ingrediant.join(', ').substring(0, 50)}...</p>
+                                </div>
+                            `;
                                 postContainer.appendChild(postFrame);
                             });
                             if (data.current_page < data.last_page) {
@@ -147,6 +107,4 @@
             window.location.href = `/post/${id}`;
         }
     </script>
-</body>
-
-</html>
+@endsection

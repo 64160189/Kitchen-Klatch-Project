@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Models\PostModel;
+use Illuminate\Support\Facades\Auth;
+
 
 class postcontroller extends Controller
 {
@@ -64,6 +66,7 @@ class postcontroller extends Controller
             'ingrediant' => json_encode($ingredients, JSON_UNESCAPED_UNICODE),
             'htc' => json_encode($htc, JSON_UNESCAPED_UNICODE),
             'youtube_link' => $request->input('youtube_link'),
+            'user_id' => Auth::id(), // Save the user_id of the authenticated user
         ]);
         
         // Redirect to a success page or home
@@ -74,7 +77,7 @@ class postcontroller extends Controller
         $post = DB::table('post_models')->where('id', $id)->first();
 
         if (!$post) {
-            abort(404);
+            return view('/');
         }
 
         $post->ingrediant = json_decode($post->ingrediant, true);

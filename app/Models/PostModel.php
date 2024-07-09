@@ -16,5 +16,6 @@ class PostModel extends Model
         'ingrediant',
         'htc',
         'youtube_link',
+        'user_id',
     ];
 }

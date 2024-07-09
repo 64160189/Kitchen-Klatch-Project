@@ -1,48 +1,10 @@
-// resources/views/fullPost.blade.php
-@extends('layout') <!-- header from layouts/app -->
-@section('title')
-    {{ $post->title }}
-@endsection <!-- title from layout -->
-<!DOCTYPE html>
-<html lang="en">
+@extends('layouts.app')
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
-        integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
-        integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous">
-    </script>
-
-    <style>
-        body {
-            font-family: Arial, Helvetica, sans-serif;
-        }
-
-        .container {
-            display: flex;
-            flex-direction: column;
-            flex-grow: 1;
-            overflow: hidden;
-            margin-top: 60px;
-        }
-
-        .back-button {
-            display: flex;
-            margin-bottom: 20px;
-            width: 90px;
-            height: 38px;
-        }
-    </style>
-</head>
-
-<body>
+@section('content')
     <div class="container">
-        <button class="back-button btn btn-outline-danger" onclick="window.history.back();"><svg
-                xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0px 0px 24px 24px" stroke-width="1.5"
-                stroke="currentColor" class="size-3">
+        <button class="back-button btn btn-outline-danger" onclick="window.history.back();"
+            style="display: flex; margin-bottom: 20px; width: 90px; height: 38px;"><svg xmlns="http://www.w3.org/2000/svg"
+                fill="none" viewBox="0px 0px 24px 24px" stroke-width="1.5" stroke="currentColor" class="size-3">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18" />
             </svg>Back</button>
 
@@ -98,6 +60,4 @@
         </div>
 
     </div>
-</body>
-
-</html>
+@endsection

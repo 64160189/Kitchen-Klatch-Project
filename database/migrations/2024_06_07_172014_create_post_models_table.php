@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('post_models', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('user_id')->constrained()->onDelete('cascade'); // Foreign key to users table
             $table->string('title');
             $table->text('description');
             $table->text('image');
