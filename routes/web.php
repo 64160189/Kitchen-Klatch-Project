@@ -8,6 +8,7 @@ use App\Http\Controllers\Auth\ForgotPasswordController;
 use App\Http\Controllers\Auth\ResetPasswordController;
 use App\Http\Controllers\Auth\VerificationController;
 use App\Http\Controllers\postcontroller;
+use App\Http\Middleware\IsAdmin;
 
 Route::get('/', [postcontroller::class,'showPost'])->name('home');
 
@@ -34,7 +35,9 @@ Route::get('/email/verify/{id}/{hash}', [VerificationController::class, 'verify'
 Route::post('/email/resend', [VerificationController::class, 'resend'])->name('verification.resend');
 
 // Admin Routes
-Route::get('/admin/home', [HomeController::class,'adminHome'])->name('admin.home')->middleware('is_admin');
+Route::get('/admin/home', [HomeController::class, 'adminHome'])
+    ->name('admin.home')
+    ->middleware(IsAdmin::class);
 
 // Require login for creating and storing posts
 Route::middleware(['auth'])->group(function () {
