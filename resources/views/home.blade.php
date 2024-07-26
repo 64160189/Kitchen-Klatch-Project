@@ -47,7 +47,7 @@
                                     <h2 class="card-title">{{ $item->title }}</h2>
                                     <p class="card-text">{{ Str::limit($item->description, 50) }}</p>
                                     <h3 class="card-text">วัตถุดิบ:</h3>
-                                    <p class="card-text">{{ Str::limit(implode(', ', $item->ingrediant), 50) }}</p>
+                                    {{ Str::limit(is_array($item->ingrediant) ? implode(', ', $item->ingrediant) : $item->ingrediant, 50) }}
                                 </div>
                             </div>
                         @endforeach

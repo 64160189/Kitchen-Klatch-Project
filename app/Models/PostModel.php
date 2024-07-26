@@ -18,4 +18,14 @@ class PostModel extends Model
         'youtube_link',
         'user_id',
     ];
+
+    protected $casts = [
+        'ingrediant' => 'array',
+    ];
+
+    // ฟังก์ชันความสัมพันธ์กับผู้ใช้
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
 }

@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
@@ -49,3 +50,7 @@ Route::middleware(['auth'])->group(function () {
 
 Route::get('/posts', [postcontroller::class, 'fetchPosts']);
 Route::get('/post/{id}', [postcontroller::class, 'showFullPost'])->name('post.show');
+
+//Profile Routes
+Route::resource('users', UserController::class)->only(['show', 'edit', 'update'])->middleware('auth');
+Route::get('profile', [UserController::class,'profile'])->middleware('auth')->name('profile');
