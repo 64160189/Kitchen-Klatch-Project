@@ -3,7 +3,8 @@
         <!-- User Info Section -->
         <div class="d-flex align-items-center justify-content-between">
             <div class="d-flex align-items-center">
-                <img class="me-3 avatar-sm rounded-circle border border-dark" src="{{ $user->getImageURL() }}" alt="Avatar" style="width: 150px;">
+                <img class="me-3 avatar-sm rounded-circle border border-dark" src="{{ $user->getImageURL() }}"
+                    alt="Avatar" style="width: 30%;">
                 <div>
                     <h3 class="card-title mb-0 text-dark">
                         <a href="#" class="text-decoration-none text-primary">{{ $user->name }}</a>
@@ -12,7 +13,7 @@
                 </div>
             </div>
             @auth()
-                @if(Auth::id() === $user->id)
+                @if (Auth::id() === $user->id)
                     <div>
                         <a href="{{ route('users.edit', $user->id) }}" class="btn btn-outline-secondary">Edit</a>
                     </div>
@@ -42,7 +43,7 @@
             </div>
 
             @auth()
-                @if(Auth::id() !== $user->id)
+                @if (Auth::id() !== $user->id)
                     <div class="mt-3">
                         <button class="btn btn-secondary btn-sm">Follow</button>
                     </div>
