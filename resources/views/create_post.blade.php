@@ -41,7 +41,7 @@
             <div class="mb-3">
                 <label for="youtube_link" class="form-label">ลิงค์วิดีโอ YouTube "ถ้ามี"</label>
                 <input type="text" class="form-control" id="youtube_link" name="youtube_link"
-                    placeholder="โปรดใส่ลิงค์วิดีโอ YouTube เท่านั้น (ถ้ามี)">
+                    placeholder="โปรดใส่ลิงค์วิดีโอ YouTube เท่านั้น (ถ้ามี) *คลิปที่มีลิขสิทธิ์อาจจะไม่ขึ้นนะครับ">
             </div>
             <input type="submit" value="เผยแพร่" class="btn btn-danger">
             <a onclick="window.history.back();" class="btn btn-light">ออก</a>
