@@ -51,8 +51,7 @@
 
                             @if (Route::has('register'))
                                 <li class="nav-item">
-                                    <a class="nav-link btn btn-light"
-                                        href="{{ route('register') }}">{{ __('Register') }}</a>
+                                    <a class="nav-link btn btn-light" href="{{ route('register') }}">{{ __('Register') }}</a>
                                 </li>
                             @endif
                         @else
@@ -63,21 +62,13 @@
                                 </a>
 
                                 <div class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
-
-                                    @if (Auth::user()->is_admin)
-                                        <a class="dropdown-item" href="{{ route('admin.home') }}">
-                                            {{ __('Admin') }}
-                                        </a>
-                                    @endif
-
-                                    <a class="dropdown-item" href="{{ route('profile') }}">
+                                    <a class="dropdown-item" href="{{ route('profile')}}">
                                         {{ __('Profile') }}
                                     </a>
                                     <a class="dropdown-item" href="/create_post">
                                         {{ __('Post Your Menu') }}
                                     </a>
-                                    <a class="dropdown-item" href="{{ route('logout') }}"
-                                        onclick="event.preventDefault();
+                                    <a class="dropdown-item" href="{{ route('logout') }}" onclick="event.preventDefault();
                                                          document.getElementById('logout-form').submit();">
                                         {{ __('Logout') }}
                                     </a>

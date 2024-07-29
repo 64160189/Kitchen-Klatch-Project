@@ -74,25 +74,16 @@ class postcontroller extends Controller
     }
 
     public function showFullPost($id){
-        $post = PostModel::with('user')->find($id);
+        $post = DB::table('post_models')->where('id', $id)->first();
 
         if (!$post) {
-            return redirect('/');
+            return view('/');
         }
 
-        // Check if $post->ingrediant is a string before decoding
-        if (is_string($post->ingrediant)) {
-            $post->ingrediant = json_decode($post->ingrediant, true);
-        }
+        $post->ingrediant = json_decode($post->ingrediant, true);
+        $post->htc = json_decode($post->htc, true);
 
-        // Check if $post->htc is a string before decoding
-        if (is_string($post->htc)) {
-            $post->htc = json_decode($post->htc, true);
-        }
-
-        return view('fullpost', compact('post'));
+        return view('fullPost', compact('post'));
     }
-
-
     
 }
