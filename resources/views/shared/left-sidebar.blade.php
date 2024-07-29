@@ -8,11 +8,6 @@
       </li>
       <li class="nav-item">
         <a class="nav-link" href="#">
-          <span>Feed</span>
-        </a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" href="#">
           <span>Settings</span>
         </a>
       </li>
