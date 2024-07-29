@@ -2,12 +2,6 @@
 
 @section('content')
     <style>
-        .left-sidebar {
-            position: fixed;
-            bottom: 0px;
-            top: 100px;
-        }
-
         .main-content {
             display: flex;
             flex-direction: column;
@@ -26,12 +20,11 @@
 
     <div class="container-fluid">
         <div class="row">
-            <div class="col-3 left-sidebar bg-danger"
-                style="bottom: 0; display: flex; flex-direction: column; align-items: center;">
-                <h2>Search from ingredients (Position: Fixed)</h2>
+            <div class="col-3 left-sidebar bg-danger">
+                <div class="sticky-top" style="top: 70px;">
+                    <h2>Search from ingredients (Position: Fixed)</h2>
+                </div>
             </div>
-
-            <div class="col-3"></div>
 
             <div class="col main-content">
                 <div class="content-area">
