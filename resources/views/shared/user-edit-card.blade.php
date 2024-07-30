@@ -51,6 +51,13 @@
                     <span class="fas fa-comment me-1"></span> 2
                 </a>
             </div>
+            @auth()
+            @if(Auth::id() !== $user->id)
+            <div class="mt-3">
+                <button class="btn btn-primary btn-sm">Follow</button>
+            </div>
+            @endif
+            @endauth
         </div>
         </form>
     </div>
