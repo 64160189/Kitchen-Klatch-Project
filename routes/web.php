@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\FollowerControler;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
@@ -54,3 +55,6 @@ Route::get('/post/{id}', [postcontroller::class, 'showFullPost'])->name('post.sh
 //Profile Routes
 Route::resource('users', UserController::class)->only(['show', 'edit', 'update'])->middleware('auth');
 Route::get('profile', [UserController::class,'profile'])->middleware('auth')->name('profile');
+
+Route::post('users/{user}/follow',[FollowerControler::class,'follow'])->middleware('auth')->name('users.follow');
+Route::post('users/{user}/unfollow',[FollowerControler::class,'unfollow'])->middleware('auth')->name('users.unfollow');
