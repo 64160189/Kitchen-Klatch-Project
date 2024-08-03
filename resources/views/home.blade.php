@@ -21,13 +21,24 @@
     <div class="container-fluid">
         <div class="row">
             <div class="col-3 left-sidebar bg-danger">
-                <div class="sticky-top" style="top: 70px;">
+                <div class="sticky-top" style="top: 15%;">
                     <h2>Search from ingredients (Position: Fixed)</h2>
                 </div>
             </div>
 
-            <div class="col main-content">
+            <div class="col-9 main-content">
                 <div class="content-area">
+                    @if (session('error'))
+                        <div class="alert alert-danger">
+                            {{ session('error') }}
+                        </div>
+                    @endif
+                    @if (session('success'))
+                        <div class="alert alert-success">
+                            {{ session('success') }}
+                        </div>
+                    @endif
+
                     <h1>Posts</h1>
 
                     <div id="post-container">

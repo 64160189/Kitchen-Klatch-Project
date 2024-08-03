@@ -19,10 +19,6 @@ class PostModel extends Model
         'user_id',
     ];
 
-    protected $casts = [
-        'ingrediant' => 'array',
-    ];
-
     // ฟังก์ชันความสัมพันธ์กับผู้ใช้
     public function user()
     {

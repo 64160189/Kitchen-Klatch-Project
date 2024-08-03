@@ -38,38 +38,33 @@ class postcontroller extends Controller
         return response()->json($posts);
     }
 
-    public function storePost(Request $request){
-        // Validate the request data
+    public function storePost(Request $request) {
         $request->validate([
             'title' => 'required|string|max:255',
             'description' => 'required|string',
             'image' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
-            'ingredient' => 'required|string',
+            'ingrediant' => 'required|string',
             'htc' => 'required|string',
             'youtube_link' => 'nullable|url'
         ]);
 
-        // Convert ingredients and htc to JSON format
-        $ingredients = explode(PHP_EOL, $request->input('ingredient'));
+        $ingrediants = explode(PHP_EOL, $request->input('ingrediant'));
         $htc = explode(PHP_EOL, $request->input('htc'));
 
-        // Handle the image upload
         if ($request->hasFile('image')) {
             $imagePath = $request->file('image')->store('images', 'public');
         }
-        
-        // Create a new post
+
         PostModel::create([
             'title' => $request->input('title'),
             'description' => $request->input('description'),
             'image' => $imagePath ?? '',
-            'ingrediant' => json_encode($ingredients, JSON_UNESCAPED_UNICODE),
+            'ingrediant' => json_encode($ingrediants, JSON_UNESCAPED_UNICODE),
             'htc' => json_encode($htc, JSON_UNESCAPED_UNICODE),
             'youtube_link' => $request->input('youtube_link'),
-            'user_id' => Auth::id(), // Save the user_id of the authenticated user
+            'user_id' => Auth::id(),
         ]);
-        
-        // Redirect to a success page or home
+
         return redirect('/')->with('success', 'Post created successfully.');
     }
 
@@ -77,7 +72,7 @@ class postcontroller extends Controller
         $post = PostModel::with('user')->find($id);
 
         if (!$post) {
-            return redirect('/');
+            return redirect('/')->with('error', 'Post not found.');
         }
 
         // Check if $post->ingrediant is a string before decoding
@@ -90,9 +85,70 @@ class postcontroller extends Controller
             $post->htc = json_decode($post->htc, true);
         }
 
-        return view('fullpost', compact('post'));
+        return view('posts/fullpost', compact('post'));
+    }
+    
+    public function deletePost($id){
+        $post = PostModel::findOrFail($id);
+
+        // Check if the authenticated user is the owner or an admin
+        if (!(Auth::user()->is_admin || Auth::user()->id == $post->user_id)) {
+            return redirect('/')->with('error', 'you do not have permission to do that.');
+        }
+
+        $post->delete();
+
+        return redirect('/')->with('success', 'Post deleted successfully.');
     }
 
+    public function editPost($id) {
+        $post = PostModel::findOrFail($id);
 
-    
+        // Check if the authenticated user is the owner
+        if (Auth::user()->id !== $post->user_id) {
+            return redirect('/')->with('error', 'you do not have permission to do that.');
+        }
+
+        $post->ingrediant = json_decode($post->ingrediant, true);
+        $post->htc = json_decode($post->htc, true);
+        return view('posts.edit_post', compact('post'));
+    }
+
+    public function updatePost(Request $request, $id) {
+        $post = PostModel::findOrFail($id);
+
+        // Check if the authenticated user is the owner
+        if (Auth::user()->id !== $post->user_id) {
+            return redirect('/')->with('error', 'you do not have permission to do that.');
+        }
+
+        $request->validate([
+            'title' => 'required|string|max:255',
+            'description' => 'required|string',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'ingrediant' => 'required|string',
+            'htc' => 'required|string',
+            'youtube_link' => 'nullable|url'
+        ]);
+
+        $ingrediants = explode(PHP_EOL, $request->input('ingrediant'));
+        $htc = explode(PHP_EOL, $request->input('htc'));
+
+        if ($request->hasFile('image')) {
+            $imagePath = $request->file('image')->store('images', 'public');
+        }
+
+        $post->title = $request->input('title');
+        $post->description = $request->input('description');
+        if (isset($imagePath)) {
+            $post->image = $imagePath;
+        }
+        $post->ingrediant = json_encode($ingrediants, JSON_UNESCAPED_UNICODE);
+        $post->htc = json_encode($htc, JSON_UNESCAPED_UNICODE);
+        $post->youtube_link = $request->input('youtube_link');
+        $post->save();
+
+        return redirect()->route('post.show', ['id' => $post->id])->with('success', 'Post updated successfully.');
+    }
+
 }

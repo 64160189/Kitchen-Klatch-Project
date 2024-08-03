@@ -43,9 +43,16 @@ Route::get('/admin/home', [HomeController::class, 'adminHome'])
 // Require login for creating and storing posts
 Route::middleware(['auth'])->group(function () {
     Route::get('/create_post', function () {
-        return view('create_post');
+        return view('posts/create_post');
     });
-    Route::post('/insert', [PostController::class, 'storePost'])->name('post.store');
+    Route::post('/insert_post', [PostController::class, 'storePost'])->name('post.store');
+});
+
+// Delete & Edit Post
+Route::middleware(['auth'])->group(function () {
+    Route::delete('delete_post/{id}', [PostController::class, 'deletePost'])->name('post.destroy');
+    Route::get('edit_post/{id}', [PostController::class, 'editPost'])->name('post.edit');
+    Route::put('/update_post/{id}', [PostController::class, 'updatePost'])->name('post.update');
 });
 
 Route::get('/posts', [postcontroller::class, 'fetchPosts']);
