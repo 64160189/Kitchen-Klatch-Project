@@ -50,8 +50,8 @@
                     </ul>
 
                     <form class="d-flex mb-1 mt-1" role="search">
-                        <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
-                        <button class="btn btn-danger" type="submit">Search</button>
+                        <input class="form-control me-2" type="search" placeholder="ค้นหาชื่อเมนู" aria-label="Search">
+                        <button class="btn btn-danger" type="submit">ค้นหา</button>
                     </form>
 
                     <!-- Right Side Of Navbar -->
@@ -61,14 +61,14 @@
                             @if (Route::has('login'))
                                 <li class="nav-item ">
                                     <a class="nav-link btn btn-danger bg-danger"
-                                        href="{{ route('login') }}">{{ __('Login') }}</a>
+                                        href="{{ route('login') }}">{{ __('เข้าสู่ระบบ') }}</a>
                                 </li>
                             @endif
 
                             @if (Route::has('register'))
                                 <li class="nav-item">
                                     <a class="nav-link btn btn-light"
-                                        href="{{ route('register') }}">{{ __('Register') }}</a>
+                                        href="{{ route('register') }}">{{ __('ลงทะเบียน') }}</a>
                                 </li>
                             @endif
                         @else
@@ -82,20 +82,20 @@
 
                                     @if (Auth::user()->is_admin)
                                         <a class="dropdown-item" href="{{ route('admin.home') }}">
-                                            {{ __('Admin') }}
+                                            {{ __('แอดมิน') }}
                                         </a>
                                     @endif
 
                                     <a class="dropdown-item" href="{{ route('profile') }}">
-                                        {{ __('Profile') }}
+                                        {{ __('โปรไฟล์') }}
                                     </a>
                                     <a class="dropdown-item" href="/create_post">
-                                        {{ __('Post Your Menu') }}
+                                        {{ __('แบ่งปันสูตรอาหาร') }}
                                     </a>
-                                    <a class="dropdown-item" href="{{ route('logout') }}"
+                                    <a class="dropdown-item bg-danger-subtle" href="{{ route('logout') }}"
                                         onclick="event.preventDefault();
                                                          document.getElementById('logout-form').submit();">
-                                        {{ __('Logout') }}
+                                        {{ __('ออกจากระบบ') }}
                                     </a>
 
                                     <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">

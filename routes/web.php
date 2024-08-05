@@ -55,13 +55,16 @@ Route::middleware(['auth'])->group(function () {
     Route::get('edit_post/{id}', [PostController::class, 'editPost'])->name('post.edit');
     Route::put('/update_post/{id}', [PostController::class, 'updatePost'])->name('post.update');
 });
-
+// post routes
 Route::get('/posts', [postcontroller::class, 'fetchPosts']);
 Route::get('/post/{id}', [postcontroller::class, 'showFullPost'])->name('post.show');
 
-//Profile Routes
+// Users Routes
 Route::resource('users', UserController::class)->only(['show', 'edit', 'update'])->middleware('auth');
 Route::get('profile', [UserController::class,'profile'])->middleware('auth')->name('profile');
 
 Route::post('users/{user}/follow',[FollowerControler::class,'follow'])->middleware('auth')->name('users.follow');
 Route::post('users/{user}/unfollow',[FollowerControler::class,'unfollow'])->middleware('auth')->name('users.unfollow');
+
+// Search Routes
+Route::get('/search',[postcontroller::class,'titleSearch']);

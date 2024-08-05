@@ -13,57 +13,54 @@
         <div class="row">
             <!-- left sidebar (menu) -->
             <div class="col-2">
-                <!-- (menu) -->
-                <div class="btn-group dropup sticky-top" role="group" style="top:85%;">
-                    <button type="button" class="btn btn-outline-danger rounded" data-bs-toggle="dropdown"
-                        aria-expanded="false">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="26" height="16" fill="currentColor"
-                            class="bi bi-three-dots-vertical" viewBox="0 0 16 16">
-                            <path
-                                d="M9.5 13a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0m0-5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0m0-5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0" />
-                        </svg>
-                    </button>
-                    <ul class="dropdown-menu">
-                        @if (Auth::check() && Auth::user()->id == $post->user_id)
-                            <!-- edit -->
-                            <li><a class="dropdown-item" href="{{ route('post.edit', $post->id) }}">Edit post</a></li>
-                            <!-- delete -->
-                            <li>
-                                <form id="deleteForm" action="{{ route('post.destroy', $post->id) }}" method="POST">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="button" class="dropdown-item" data-bs-toggle="modal"
-                                        data-bs-target="#deleteConfirmationModal">Delete post</button>
-                                </form>
-                            </li>
-                        @else
-                            <li><a class="dropdown-item" href="#">Report</a></li>
-                        @endif
-                    </ul>
-                </div>
-                <!-- (back) -->
-                <div class="sticky-top" style="top: 92%;">
-                    <button class="back-button btn btn-outline-danger" onclick="window.history.back();">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
-                            stroke="currentColor" class="size-3">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18" />
-                        </svg>
-                    </button>
+                <div class="hstack gap-3 sticky-top mb-2" style="top:95%;">
+                    <!-- (back) -->
+                    <div class="">
+                        <button class="back-button btn btn-outline-danger" onclick="window.history.back();">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                                stroke="currentColor" class="size-3">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18" />
+                            </svg>
+                        </button>
+                    </div>
+
+                    <!-- (menu) -->
+                    <div class="btn-group dropup" role="group">
+                        <button type="button" class="btn btn-outline-danger rounded" data-bs-toggle="dropdown"
+                            aria-expanded="false">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="26" height="16" fill="currentColor"
+                                class="bi bi-three-dots-vertical" viewBox="0 0 16 16">
+                                <path
+                                    d="M9.5 13a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0m0-5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0m0-5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0" />
+                            </svg>
+                        </button>
+                        <ul class="dropdown-menu">
+                            @if (Auth::check() && Auth::user()->id == $post->user_id)
+                                <!-- edit -->
+                                <li><a class="dropdown-item" href="{{ route('post.edit', $post->id) }}">แก้ไขสูตรอาหาร</a>
+                                </li>
+                                <!-- delete -->
+                                <li>
+                                    <form id="deleteForm" action="{{ route('post.destroy', $post->id) }}" method="POST">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="button" class="dropdown-item" data-bs-toggle="modal"
+                                            data-bs-target="#deleteConfirmationModal">ลบสูตรอาหาร</button>
+                                    </form>
+                                </li>
+                            @else
+                                <li><a class="dropdown-item" href="#">รายงานสูตรอาหารนี้</a></li>
+                            @endif
+                        </ul>
+                    </div>
+
                 </div>
             </div>
 
             <!-- content area -->
             <div class="col">
-                @if (session('error'))
-                    <div class="alert alert-danger">
-                        {{ session('error') }}
-                    </div>
-                @endif
-                @if (session('success'))
-                    <div class="alert alert-success">
-                        {{ session('success') }}
-                    </div>
-                @endif
+                @include('shared.alert-message')
 
                 <div class="card mb-3 shadow">
                     <img class="card-img-top" src="{{ asset('storage/' . $post->image) }}" alt="{{ $post->title }}"
@@ -125,10 +122,11 @@
                             @endif
                         </ol>
                     </div>
+
                 </div>
             </div>
             <!-- right sidebar (user) -->
-            <div class="col-3 post-user border" onclick="goToUser({{ $post->user->id }})">
+            <div class="col-3 post-user">
                 @include('shared.user-card', ['user' => $post->user])
             </div>
         </div>
@@ -140,15 +138,15 @@
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="deleteConfirmationModalLabel">Delete Confirmation</h5>
+                    <h5 class="modal-title" id="deleteConfirmationModalLabel">ยืนยันการลบสูตรอาหาร</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    Do you want to delete this post?
+                    คุณจะลบสูตรนี้จริงๆ ใช่หรือไม่?
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">No</button>
-                    <button type="button" class="btn btn-danger" id="confirmDeleteButton">Yes</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">ไม่</button>
+                    <button type="button" class="btn btn-danger" id="confirmDeleteButton">ใช่</button>
                 </div>
             </div>
         </div>
@@ -156,11 +154,6 @@
 
 
     <script>
-        //go to user function
-        function goToUser(userId) {
-            window.location.href = `/users/${userId}`;
-        };
-
         //delete post confirmation 
         document.addEventListener('DOMContentLoaded', function() {
             const confirmDeleteButton = document.getElementById('confirmDeleteButton');
