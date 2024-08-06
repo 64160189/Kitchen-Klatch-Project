@@ -49,7 +49,7 @@
 
                     </ul>
 
-                    <form class="d-flex mb-1 mt-1" role="search">
+                    <form class="d-flex mb-1 mt-1" role="search" method="get" action="{{ route('title.search') }}">
                         <input class="form-control me-2" type="search" placeholder="ค้นหาชื่อเมนู" aria-label="Search">
                         <button class="btn btn-danger" type="submit">ค้นหา</button>
                     </form>

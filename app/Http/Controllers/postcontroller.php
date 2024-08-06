@@ -151,4 +151,14 @@ class postcontroller extends Controller
         return redirect()->route('post.show', ['id' => $post->id])->with('success', 'Post updated successfully.');
     }
 
+    public function titleSearch(Request $request){
+        $search = $request->search;
+
+       // Search posts by title
+        $posts = PostModel::where('title', 'like', "%$search%")->get();
+
+        // Return the view with the search results
+        return view('posts/search_results', compact('posts', 'search'));
+    }
+
 }

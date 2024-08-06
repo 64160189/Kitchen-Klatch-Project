@@ -67,4 +67,4 @@ Route::post('users/{user}/follow',[FollowerControler::class,'follow'])->middlewa
 Route::post('users/{user}/unfollow',[FollowerControler::class,'unfollow'])->middleware('auth')->name('users.unfollow');
 
 // Search Routes
-Route::get('/search',[postcontroller::class,'titleSearch']);
+Route::get('/search',[postcontroller::class,'titleSearch'])->name('title.search');
