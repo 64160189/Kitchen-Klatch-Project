@@ -72,7 +72,10 @@ Route::post('users/{user}/unfollow',[FollowerControler::class,'unfollow'])->midd
 
 // Search Routes
 Route::get('/title/search', [postController::class, 'titleSearch'])->name('title.search');
-Route::get('/ingredients/search', [postController::class, 'searchByIngredients'])->name('search.recipes');
+Route::get('/ingredients/search', [postController::class, 'searchByIngredients'])->name('ingredients.search');
+// Fentch more search
+Route::get('/title/fentch', [postController::class, 'fentchTitle'])->name('fentch.search.title');
+Route::get('/ingredients/fentch', [postController::class, 'fentchIngredients'])->name('fentch.search.ingrredients');
 // Search prediction route
 Route::get('/title/predictions', [postController::class, 'titleSearchPredictions'])->name('title.predictions');
 Route::get('/ingredients/predictions', [postController::class, 'ingredientsSearchPredictions'])->name('ingredients.predictions');

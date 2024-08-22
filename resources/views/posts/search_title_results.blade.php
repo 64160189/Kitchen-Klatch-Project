@@ -101,7 +101,7 @@
                     const search = "{{ $search }}";
                     const sort = "{{ $sort }}";
                     const order = "{{ $order }}";
-                    fetch(`/title/search?search=${search}&sort=${sort}&order=${order}&page=${page}`, {
+                    fetch(`/title/fentch?search=${search}&sort=${sort}&order=${order}&page=${page}`, {
                             headers: {
                                 'X-Requested-With': 'XMLHttpRequest'
                             }

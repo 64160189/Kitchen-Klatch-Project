@@ -98,10 +98,10 @@
             if (loadMoreButton) {
                 loadMoreButton.addEventListener('click', function() {
                     const page = loadMoreButton.getAttribute('data-page');
-                    const ingredients = "{{ request('ingredients') }}";
+                    const ingredients = "{{ implode(',', $ingredients) }}";
                     const sort = "{{ $sort }}";
                     const order = "{{ $order }}";
-                    fetch(`/ingredients/search?search=${search}&sort=${sort}&order=${order}`, {
+                    fetch(`/ingredients/fentch?ingredients=${ingredients}&sort=${sort}&order=${order}&page=${page}`, {
                             headers: {
                                 'X-Requested-With': 'XMLHttpRequest'
                             }

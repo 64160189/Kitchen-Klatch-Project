@@ -169,6 +169,26 @@ class postcontroller extends Controller
         return view('posts/search_title_results', compact('posts', 'search', 'sort', 'order'));
     }
 
+    public function fentchTitle(Request $request){
+        $search = $request->input('search', '');
+        $sort = $request->input('sort', 'id');
+        $order = $request->input('order', 'desc');
+
+        // Search posts by title
+        $posts = PostModel::where('title', 'like', "%$search%")
+            ->orderBy($sort, $order)
+            ->paginate(5);
+
+        // Decode JSON fields for each post
+        foreach ($posts as $post) {
+            $post->ingrediant = json_decode($post->ingrediant, true);
+            $post->htc = json_decode($post->htc, true);
+        }
+
+        // Return the posts as JSON
+        return response()->json($posts->toArray());
+    }
+
     public function titleSearchPredictions(Request $request) {
         $search = $request->get('search');
         $results = PostModel::where('title', 'like', "%$search%")
@@ -201,7 +221,29 @@ class postcontroller extends Controller
         return view('posts.search_ingredients_results', compact('posts', 'sort', 'order', 'ingredients'));
     }
 
-        public function ingredientsSearchPredictions(Request $request) {
+    public function fentchIngredients(Request $request) {
+        $ingredients = array_filter(explode(',', $request->get('ingredients')));
+        $sort = $request->input('sort', 'id');
+        $order = $request->input('order', 'desc');
+    
+        // Search posts by ingredients
+        $posts = PostModel::where(function($query) use ($ingredients) {
+            foreach ($ingredients as $ingredient) {
+                $query->where('ingrediant', 'like', "%{$ingredient}%");
+            }
+        })->orderBy($sort, $order)->paginate(5);
+    
+        // Decode JSON fields for each post
+        foreach ($posts as $post) {
+            $post->ingrediant = json_decode($post->ingrediant, true);
+            $post->htc = json_decode($post->htc, true);
+        }
+    
+        // Return the posts as JSON
+        return response()->json($posts);
+    }    
+
+    public function ingredientsSearchPredictions(Request $request) {
         $search = $request->get('search');
 
         // Assuming 'ingrediant' is a comma-separated string
