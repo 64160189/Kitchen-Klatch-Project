@@ -1,28 +1,39 @@
 @extends('layouts.app')
 
+@section('show_ingredients_bar', true)
+
 @section('content')
-    <style>
-        .main-content {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-
-        .content-area {
-            width: 70%;
-            min-width: 300px;
-        }
-
-        .post-frame:hover {
-            cursor: pointer;
-        }
-    </style>
-
     <div class="container-fluid">
         <div class="row">
-            <div class="col-3 left-sidebar bg-danger">
-                <div class="sticky-top" style="top: 15%;">
-                    <h2>Search from ingredients (Position: Fixed)</h2>
+            <div class="col-3 left-sidebar">
+                <div class="fridge sticky-top border bg-light">
+                    <h2>รายการวัตถุดิบของคุณ:</h2>
+                    <table class="igd-input">
+                        <tr>
+                            <th width="100%" style="position: relative;">
+                                <input type="text" id="ingredient-input" class="form-control"
+                                    placeholder="เพิ่มวัตถุดิบของคุณ...">
+                                <ul id="ingredients-suggestions" class="list-group position-absolute w-100"
+                                    style="top: 100%; z-index: 1000;"></ul>
+                            </th>
+                            <th>
+                                <button id="add-ingredient" class="btn btn-danger">+</button>
+                            </th>
+                        </tr>
+                    </table>
+                    @php
+                        $ingredients = session('ingredients', []);
+                    @endphp
+
+                    <ul id="ingredient-list" class="list-unstyled mt-2">
+                        @foreach ($ingredients as $ingredient)
+                            <li class="ingredient-item">
+                                {{ $ingredient }}
+                                <button data-ingredient="{{ $ingredient }}">&times;</button>
+                            </li>
+                        @endforeach
+                    </ul>
+                    <button id="search-recipes" class="btn btn-danger w-100 mt-2">Search from this list</button>
                 </div>
             </div>
 
@@ -37,7 +48,7 @@
                             <div class="post-frame card mb-4 shadow bg-secondary-subtle"
                                 onclick="goToPost({{ $item->id }})">
                                 <img class="card-img-top" src="{{ asset('storage/' . $item->image) }}"
-                                    alt="{{ $item->title }}" style="width:100%; height:auto;">
+                                    alt="{{ $item->title }}" style="max-height: 800px;">
                                 <div class="card-body">
                                     <h2 class="card-title">{{ $item->title }}</h2>
                                     <p class="card-text">{{ Str::limit($item->description, 50) }}</p>
@@ -48,8 +59,10 @@
                         @endforeach
                     </div>
                     @if ($posts->hasMorePages())
-                        <div id="load-more-trigger" class="d-flex justify-content-center">
-                            <!-- This will be the trigger for loading more posts -->
+                        <div class="d-flex justify-content-center">
+                            <button id="load-more" class="btn btn-danger" data-page="{{ $posts->currentPage() + 1 }}">
+                                Load More
+                            </button>
                         </div>
                     @endif
                 </div>
@@ -60,57 +73,44 @@
     <script>
         // Load more script
         document.addEventListener('DOMContentLoaded', function() {
-            const loadMoreTrigger = document.getElementById('load-more-trigger');
-            let currentPage = {{ $posts->currentPage() + 1 }};
-            const lastPage = {{ $posts->lastPage() }};
+            const loadMoreButton = document.getElementById('load-more');
+            if (loadMoreButton) {
+                loadMoreButton.addEventListener('click', function() {
+                    const page = loadMoreButton.getAttribute('data-page');
+                    fetch(`/posts?page=${page}`)
+                        .then(response => response.json())
+                        .then(data => {
+                            const postContainer = document.getElementById('post-container');
+                            data.data.forEach(post => {
+                                const postFrame = document.createElement('div');
+                                postFrame.classList.add('post-frame', 'card', 'mb-4', 'shadow',
+                                    'bg-secondary-subtle');
+                                postFrame.setAttribute('onclick', `goToPost(${post.id})`);
 
-            if (loadMoreTrigger) {
-                const observer = new IntersectionObserver(entries => {
-                    entries.forEach(entry => {
-                        if (entry.isIntersecting && currentPage <= lastPage) {
-                            loadMorePosts();
-                        }
-                    });
-                }, {
-                    root: null, // Use the viewport as the container
-                    rootMargin: '0px',
-                    threshold: 1.0 // Trigger when 100% of the target is visible
-                });
-
-                observer.observe(loadMoreTrigger);
-            }
-
-            function loadMorePosts() {
-                fetch(`/posts?page=${currentPage}`)
-                    .then(response => response.json())
-                    .then(data => {
-                        const postContainer = document.getElementById('post-container');
-                        data.data.forEach(post => {
-                            const postFrame = document.createElement('div');
-                            postFrame.classList.add('post-frame', 'card', 'mb-4', 'shadow',
-                                'bg-secondary-subtle');
-                            postFrame.setAttribute('onclick',
-                                `goToPost(${post.id})`); // Onclick function
-                            postFrame.innerHTML = `
-                            <img class="card-img-top" src="/storage/${post.image}" alt="${post.title}" style="width:100%; height:auto;">
-                            <div class="card-body">
-                                <h2 class="card-title">${post.title}</h2>
-                                <p class="card-text">${post.description.substring(0, 50)}...</p>
-                                <h3 class="card-text">วัตถุดิบ:</h3>
-                                <p class="card-text">${post.ingrediant.join(', ').substring(0, 50)}...</p>
-                            </div>
-                        `;
-                            postContainer.appendChild(postFrame);
+                                postFrame.innerHTML = `
+                                <img class="card-img-top" src="/storage/${post.image}" alt="${post.title}" style="max-height: 800px;">
+                                <div class="card-body">
+                                    <h2 class="card-title">${post.title}</h2>
+                                    <p class="card-text">${post.description.substring(0, 50)}...</p>
+                                    <h3 class="card-text">วัตถุดิบ:</h3>
+                                    <p class="card-text">${Array.isArray(post.ingrediant) ? post.ingrediant.join(', ').substring(0, 50) : post.ingrediant.substring(0, 50)}...</p>
+                                </div>
+                            `;
+                                postContainer.appendChild(postFrame);
+                            });
+                            if (data.current_page < data.last_page) {
+                                loadMoreButton.setAttribute('data-page', data.current_page + 1);
+                            } else {
+                                loadMoreButton.remove();
+                            }
                         });
-                        currentPage++;
-                        if (currentPage > lastPage) {
-                            loadMoreTrigger.remove(); // Remove the trigger if no more pages
-                        }
-                    });
+                });
             }
         });
 
-        //go to post script
+
+
+        // go to post function
         function goToPost(id) {
             window.location.href = `/post/${id}`;
         }

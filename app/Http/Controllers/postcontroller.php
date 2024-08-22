@@ -153,12 +153,85 @@ class postcontroller extends Controller
 
     public function titleSearch(Request $request){
         $search = $request->search;
+        $sort = $request->sort ?? 'id';
+        $order = $request->order ?? 'desc';
 
        // Search posts by title
-        $posts = PostModel::where('title', 'like', "%$search%")->get();
+        $posts = PostModel::where('title', 'like', "%$search%")->orderBy($sort, $order)->paginate(5);
+
+            // Decode JSON fields for each post
+            foreach ($posts as $post) {
+                $post->ingrediant = json_decode($post->ingrediant, true);
+                $post->htc = json_decode($post->htc, true);
+            }
 
         // Return the view with the search results
-        return view('posts/search_results', compact('posts', 'search'));
+        return view('posts/search_title_results', compact('posts', 'search', 'sort', 'order'));
+    }
+
+    public function titleSearchPredictions(Request $request) {
+        $search = $request->get('search');
+        $results = PostModel::where('title', 'like', "%$search%")
+            ->orderBy('id', 'desc')
+            ->limit(5)
+            ->get(['id', 'title']);
+
+        return response()->json($results);
+    }
+
+    public function searchByIngredients(Request $request) {
+        $ingredients = explode(',', $request->get('ingredients'));
+        $sort = $request->sort ?? 'id';
+        $order = $request->order ?? 'desc';
+
+        // Search posts by ingredients
+        $posts = PostModel::where(function($query) use ($ingredients) {
+            foreach ($ingredients as $ingredient) {
+                $query->where('ingrediant', 'like', "%{$ingredient}%");
+            }
+        })->orderBy($sort, $order)->paginate(5);
+
+        // Decode JSON fields for each post
+        foreach ($posts as $post) {
+            $post->ingrediant = json_decode($post->ingrediant, true);
+            $post->htc = json_decode($post->htc, true);
+        }
+
+        // Return the view with the search results
+        return view('posts.search_ingredients_results', compact('posts', 'sort', 'order', 'ingredients'));
+    }
+
+        public function ingredientsSearchPredictions(Request $request) {
+        $search = $request->get('search');
+
+        // Assuming 'ingrediant' is a comma-separated string
+        $results = PostModel::where('ingrediant', 'LIKE', "%$search%")
+            ->select('ingrediant')
+            ->distinct()
+            ->get();
+
+        // Splitting the ingredient field to return individual ingredients
+        $suggestions = [];
+        foreach ($results as $result) {
+            $ingredients = explode(',', str_replace(['[', ']', '"'], '', $result->ingrediant));
+            foreach ($ingredients as $ingredient) {
+                $ingredient = trim($ingredient);
+                if (stripos($ingredient, $search) !== false && !in_array($ingredient, $suggestions)) {
+                    $suggestions[] = $ingredient;
+                }
+                if (count($suggestions) >= 5) {
+                    break 2;
+                }
+            }
+        }
+
+        return response()->json($suggestions);
+    }
+
+    public function storeIngredients(Request $request) {
+        $ingredients = $request->input('ingredients');
+        session(['ingredients' => $ingredients]);
+        return response()->json(['status' => 'success']);
     }
 
 }

@@ -17,6 +17,56 @@
     <!-- Scripts -->
     @vite(['resources/sass/app.scss', 'resources/js/app.js'])
 
+    <style>
+        .main-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .content-area {
+            width: 75%;
+            min-width: 300px;
+        }
+
+        .post-frame:hover {
+            cursor: pointer;
+        }
+
+        .left-sidebar {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .fridge {
+            width: 20%;
+            padding: 10px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            position: fixed;
+            top: 20%;
+            z-index: 1000;
+        }
+
+        .ingredient-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #ffcccc;
+            padding: 5px 10px;
+            border-radius: 5px;
+            margin-bottom: 5px;
+        }
+
+        .ingredient-item button {
+            background: none;
+            border: none;
+            color: #ff0000;
+            font-size: 1.2rem;
+        }
+    </style>
+
 </head>
 
 <body>
@@ -35,8 +85,6 @@
                     </button>
                 </a>
 
-
-
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
                     data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
                     aria-expanded="false" aria-label="{{ __('Toggle navigation') }}">
@@ -48,10 +96,14 @@
                     <ul class="navbar-nav me-auto">
 
                     </ul>
-
-                    <form class="d-flex mb-1 mt-1" role="search" method="get" action="{{ route('title.search') }}">
-                        <input class="form-control me-2" type="search" placeholder="ค้นหาชื่อเมนู" aria-label="Search">
+                    {{-- search bar --}}
+                    <form class="d-flex mb-1 mt-1 position-relative" role="search" method="get"
+                        action="{{ route('title.search') }}">
+                        <input class="form-control me-2" id="search-input" type="search" name="search"
+                            placeholder="ค้นหาชื่อเมนู" aria-label="Search" autocomplete="off">
                         <button class="btn btn-danger" type="submit">ค้นหา</button>
+                        <ul id="title-suggestions" class="list-group position-absolute w-100"
+                            style="top: 100%; z-index: 1000;"></ul>
                     </form>
 
                     <!-- Right Side Of Navbar -->
@@ -108,6 +160,177 @@
                 </div>
             </div>
         </nav>
+
+        <script>
+            // predict search script
+            document.addEventListener('DOMContentLoaded', function() {
+                const searchInput = document.getElementById('search-input');
+                const suggestionsBox = document.getElementById('title-suggestions');
+
+                searchInput.addEventListener('input', function() {
+                    const query = searchInput.value.trim();
+
+                    if (query.length > 0) {
+                        fetch(`/title/predictions?search=${query}`)
+                            .then(response => response.json())
+                            .then(data => {
+                                suggestionsBox.innerHTML = '';
+                                if (data.length > 0) {
+                                    data.forEach(post => {
+                                        const suggestionItem = document.createElement('li');
+                                        suggestionItem.classList.add('list-group-item',
+                                            'list-group-item-action');
+                                        suggestionItem.textContent = post.title;
+                                        suggestionItem.addEventListener('click', function() {
+                                            searchInput.value = post.title;
+                                            suggestionsBox.innerHTML = '';
+                                        });
+                                        suggestionsBox.appendChild(suggestionItem);
+                                    });
+                                } else {
+                                    const noResultsItem = document.createElement('li');
+                                    noResultsItem.classList.add('list-group-item');
+                                    noResultsItem.textContent = 'No results found';
+                                    suggestionsBox.appendChild(noResultsItem);
+                                }
+                            });
+                    } else {
+                        suggestionsBox.innerHTML = '';
+                    }
+                });
+
+                document.addEventListener('click', function(event) {
+                    if (!suggestionsBox.contains(event.target) && event.target !== searchInput) {
+                        suggestionsBox.innerHTML = '';
+                    }
+                });
+            });
+
+            // ask for ingredients bar
+            @if (View::hasSection('show_ingredients_bar'))
+                // ingredients search script
+                document.addEventListener('DOMContentLoaded', function() {
+                    const ingredientInput = document.getElementById('ingredient-input');
+                    const addIngredientButton = document.getElementById('add-ingredient');
+                    const ingredientList = document.getElementById('ingredient-list');
+                    const searchRecipesButton = document.getElementById('search-recipes');
+                    let ingredients = @json($ingredients); // Load the ingredients from PHP
+
+                    if (ingredients && ingredients.length > 0) {
+                        updateIngredientList();
+                    }
+
+                    addIngredientButton.addEventListener('click', function() {
+                        const ingredient = ingredientInput.value.trim();
+                        if (ingredient && !ingredients.includes(ingredient)) {
+                            ingredients.push(ingredient);
+                            updateIngredientList();
+                        }
+                        ingredientInput.value = '';
+                    });
+
+                    ingredientList.addEventListener('click', function(e) {
+                        if (e.target.tagName === 'BUTTON') {
+                            const ingredient = e.target.getAttribute('data-ingredient');
+                            ingredients = ingredients.filter(i => i !== ingredient);
+                            updateIngredientList();
+                        }
+                    });
+
+                    searchRecipesButton.addEventListener('click', function() {
+                        fetch('/store-ingredients', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')
+                                    .getAttribute('content')
+                            },
+                            body: JSON.stringify({
+                                ingredients: ingredients
+                            })
+                        }).then(() => {
+                            window.location.href =
+                                `/ingredients/search?ingredients=${ingredients.join(',')}`;
+                        });
+                    });
+
+                    function updateIngredientList() {
+                        ingredientList.innerHTML = '';
+                        ingredients.forEach(ingredient => {
+                            const li = document.createElement('li');
+                            li.classList.add('ingredient-item');
+                            li.innerHTML =
+                                `${ingredient} <button data-ingredient="${ingredient}">&times;</button>`;
+                            ingredientList.appendChild(li);
+                        });
+                    }
+                });
+
+                // Load ingredient list from PHP variable
+                document.addEventListener('DOMContentLoaded', function() {
+                    const ingredients = @json($ingredients);
+                    if (ingredients && ingredients.length > 0) {
+                        updateIngredientList(ingredients);
+                    }
+
+                    function updateIngredientList(ingredients) {
+                        const ingredientList = document.getElementById('ingredient-list');
+                        ingredientList.innerHTML = '';
+                        ingredients.forEach(ingredient => {
+                            const li = document.createElement('li');
+                            li.classList.add('ingredient-item');
+                            li.innerHTML =
+                                `${ingredient} <button data-ingredient="${ingredient}">&times;</button>`;
+                            ingredientList.appendChild(li);
+                        });
+                    }
+                });
+
+                // ingredients predict search script
+                document.addEventListener('DOMContentLoaded', function() {
+                    const searchInput = document.getElementById('ingredient-input');
+                    const suggestionsBox = document.getElementById('ingredients-suggestions');
+
+                    searchInput.addEventListener('input', function() {
+                        const query = searchInput.value.trim();
+
+                        if (query.length > 0) {
+                            fetch(`/ingredients/predictions?search=${query}`)
+                                .then(response => response.json())
+                                .then(data => {
+                                    suggestionsBox.innerHTML = '';
+                                    if (data.length > 0) {
+                                        data.forEach(ingredient => {
+                                            const suggestionItem = document.createElement('li');
+                                            suggestionItem.classList.add('list-group-item',
+                                                'list-group-item-action');
+                                            suggestionItem.textContent = ingredient;
+                                            suggestionItem.addEventListener('click', function() {
+                                                searchInput.value = ingredient;
+                                                suggestionsBox.innerHTML = '';
+                                            });
+                                            suggestionsBox.appendChild(suggestionItem);
+                                        });
+                                    } else {
+                                        const noResultsItem = document.createElement('li');
+                                        noResultsItem.classList.add('list-group-item');
+                                        noResultsItem.textContent = 'No results found';
+                                        suggestionsBox.appendChild(noResultsItem);
+                                    }
+                                });
+                        } else {
+                            suggestionsBox.innerHTML = '';
+                        }
+                    });
+
+                    document.addEventListener('click', function(event) {
+                        if (!suggestionsBox.contains(event.target) && event.target !== searchInput) {
+                            suggestionsBox.innerHTML = '';
+                        }
+                    });
+                });
+            @endif
+        </script>
 
         <main class="py-4">
             @yield('content')

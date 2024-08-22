@@ -12,6 +12,7 @@ use App\Http\Controllers\postcontroller;
 use App\Http\Middleware\IsAdmin;
 use App\Http\Controllers\FollowerControler;
 
+//home Route
 Route::get('/', [postcontroller::class,'showPost'])->name('home');
 
 Auth::routes();
@@ -55,6 +56,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('edit_post/{id}', [PostController::class, 'editPost'])->name('post.edit');
     Route::put('/update_post/{id}', [PostController::class, 'updatePost'])->name('post.update');
 });
+
 // post routes
 Route::get('/posts', [postcontroller::class, 'fetchPosts']);
 Route::get('/post/{id}', [postcontroller::class, 'showFullPost'])->name('post.show');
@@ -62,9 +64,18 @@ Route::get('/post/{id}', [postcontroller::class, 'showFullPost'])->name('post.sh
 // Users Routes
 Route::resource('users', UserController::class)->only(['show', 'edit', 'update'])->middleware('auth');
 Route::get('profile', [UserController::class,'profile'])->middleware('auth')->name('profile');
-
+// Fetch more user posts
+Route::get('/users/{user}/posts', [UserController::class, 'fetchUserPosts'])->middleware('auth');
+//follow & unfollow
 Route::post('users/{user}/follow',[FollowerControler::class,'follow'])->middleware('auth')->name('users.follow');
 Route::post('users/{user}/unfollow',[FollowerControler::class,'unfollow'])->middleware('auth')->name('users.unfollow');
 
 // Search Routes
-Route::get('/search',[postcontroller::class,'titleSearch'])->name('title.search');
+Route::get('/title/search', [postController::class, 'titleSearch'])->name('title.search');
+Route::get('/ingredients/search', [postController::class, 'searchByIngredients'])->name('search.recipes');
+// Search prediction route
+Route::get('/title/predictions', [postController::class, 'titleSearchPredictions'])->name('title.predictions');
+Route::get('/ingredients/predictions', [postController::class, 'ingredientsSearchPredictions'])->name('ingredients.predictions');
+
+// store ingredients in a session
+Route::post('/store-ingredients', [postcontroller::class, 'storeIngredients']);

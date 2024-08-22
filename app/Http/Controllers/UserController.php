@@ -10,8 +10,20 @@ class UserController extends Controller
 {
     public function show(User $user)
     {
-        $posts = $user->posts()->paginate(5);
+        $posts = $user->posts()->orderBy('id', 'desc')->paginate(5);
         return view('users.show', compact('user', 'posts'));
+    }
+
+    // load more their posts
+    public function fetchUserPosts(User $user, Request $request) {
+        $posts = $user->posts()->orderBy('id', 'desc')->paginate(5);
+
+        foreach ($posts as $post) {
+            $post->ingrediant = json_decode($post->ingrediant, true);
+            $post->htc = json_decode($post->htc, true);
+        }
+
+        return response()->json($posts);
     }
 
     /**
@@ -20,7 +32,7 @@ class UserController extends Controller
     public function edit(User $user)
     {
         $editing = true;
-        $posts = $user->posts()->paginate(5);
+        $posts = $user->posts()->orderBy('id', 'desc')->paginate(5);
         return view('users.edit', compact('user', 'editing', 'posts'));
     }
 
