@@ -1,5 +1,5 @@
 <?php
-
+use App\Http\Controllers\CommentController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
@@ -13,7 +13,7 @@ use App\Http\Middleware\IsAdmin;
 use App\Http\Controllers\FollowerControler;
 
 //home Route
-Route::get('/', [postcontroller::class,'showPost'])->name('home');
+Route::get('/', [postcontroller::class, 'showPost'])->name('home');
 
 Auth::routes();
 
@@ -63,12 +63,12 @@ Route::get('/post/{id}', [postcontroller::class, 'showFullPost'])->name('post.sh
 
 // Users Routes
 Route::resource('users', UserController::class)->only(['show', 'edit', 'update'])->middleware('auth');
-Route::get('profile', [UserController::class,'profile'])->middleware('auth')->name('profile');
+Route::get('profile', [UserController::class, 'profile'])->middleware('auth')->name('profile');
 // Fetch more user posts
 Route::get('/users/{user}/posts', [UserController::class, 'fetchUserPosts'])->middleware('auth');
 //follow & unfollow
-Route::post('users/{user}/follow',[FollowerControler::class,'follow'])->middleware('auth')->name('users.follow');
-Route::post('users/{user}/unfollow',[FollowerControler::class,'unfollow'])->middleware('auth')->name('users.unfollow');
+Route::post('users/{user}/follow', [FollowerControler::class, 'follow'])->middleware('auth')->name('users.follow');
+Route::post('users/{user}/unfollow', [FollowerControler::class, 'unfollow'])->middleware('auth')->name('users.unfollow');
 
 // Search Routes
 Route::get('/title/search', [postController::class, 'titleSearch'])->name('title.search');
@@ -82,3 +82,6 @@ Route::get('/ingredients/predictions', [postController::class, 'ingredientsSearc
 
 // store ingredients in a session
 Route::post('/store-ingredients', [postcontroller::class, 'storeIngredients']);
+
+//Comment
+Route::post('/post/{id}/comments', [CommentController::class, 'store'])->name('post.comment.store');

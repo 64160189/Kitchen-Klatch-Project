@@ -21,7 +21,13 @@ class PostModel extends Model
 
     // ฟังก์ชันความสัมพันธ์กับผู้ใช้
     public function user()
-    {
-        return $this->belongsTo(User::class);
-    }
+{
+    return $this->belongsTo(User::class, 'user_id');
+}
+
+    //comment
+    public function comments()
+{
+    return $this->hasMany(Comment::class, 'post_id')->orderBy('created_at', 'desc');
+}
 }
