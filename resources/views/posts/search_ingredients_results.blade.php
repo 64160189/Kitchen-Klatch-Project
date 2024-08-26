@@ -48,6 +48,8 @@
                     <div class="mb-3">
                         <label for="sort-by" class="form-label">จัดเรียงตาม :</label>
                         <select id="sort-by" class="form-select" onchange="sortPosts()">
+                            <option value="matching_desc" {{ $sort === 'matching' && $order === 'desc' ? 'selected' : '' }}>
+                                จำนวนวัตถุดิบที่ตรงกัน</option>
                             <option value="id_desc" {{ $sort === 'id' && $order === 'desc' ? 'selected' : '' }}>เวลา
                                 (ใหม่ที่สุด - เก่าที่สุด)</option>
                             <option value="id_asc" {{ $sort === 'id' && $order === 'asc' ? 'selected' : '' }}>เวลา
@@ -99,8 +101,8 @@
                 loadMoreButton.addEventListener('click', function() {
                     const page = loadMoreButton.getAttribute('data-page');
                     const ingredients = "{{ implode(',', $ingredients) }}";
-                    const sort = "{{ $sort }}";
-                    const order = "{{ $order }}";
+                    const sort = document.getElementById('sort-by').value.split('_')[0];
+                    const order = document.getElementById('sort-by').value.split('_')[1];
                     fetch(`/ingredients/fentch?ingredients=${ingredients}&sort=${sort}&order=${order}&page=${page}`, {
                             headers: {
                                 'X-Requested-With': 'XMLHttpRequest'
@@ -116,14 +118,14 @@
                                 postFrame.setAttribute('onclick', `goToPost(${post.id})`);
 
                                 postFrame.innerHTML = `
-                                <img class="card-img-top" src="/storage/${post.image}" alt="${post.title}" style="max-height: 800px;">
-                                <div class="card-body">
-                                    <h2 class="card-title">${post.title}</h2>
-                                    <p class="card-text">${post.description.substring(0, 50)}...</p>
-                                    <h3 class="card-text">วัตถุดิบ:</h3>
-                                    <p class="card-text">${Array.isArray(post.ingrediant) ? post.ingrediant.join(', ').substring(0, 50) : post.ingrediant.substring(0, 50)}...</p>
-                                </div>
-                            `;
+                            <img class="card-img-top" src="/storage/${post.image}" alt="${post.title}" style="width:100%; height:auto;">
+                            <div class="card-body">
+                                <h2 class="card-title">${post.title}</h2>
+                                <p class="card-text">${post.description.substring(0, 50)}...</p>
+                                <h3 class="card-text">วัตถุดิบ:</h3>
+                                <p class="card-text">${Array.isArray(post.ingrediant) ? post.ingrediant.join(', ').substring(0, 50) : post.ingrediant.substring(0, 50)}...</p>
+                            </div>
+                        `;
                                 postContainer.appendChild(postFrame);
                             });
                             if (data.current_page < data.last_page) {
@@ -141,7 +143,7 @@
             const sortBy = document.getElementById('sort-by').value.split('_');
             const sort = sortBy[0];
             const order = sortBy[1];
-            const ingredients = "{{ request('ingredients') }}";
+            const ingredients = "{{ implode(',', $ingredients) }}";
             window.location.href = `/ingredients/search?ingredients=${ingredients}&sort=${sort}&order=${order}`;
         }
 
