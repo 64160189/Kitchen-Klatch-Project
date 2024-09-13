@@ -85,3 +85,6 @@ Route::post('/store-ingredients', [postcontroller::class, 'storeIngredients']);
 
 //Comment
 Route::post('/post/{id}/comments', [CommentController::class, 'store'])->name('post.comment.store');
+
+//test
+Route::get('/test/kimhun', function(){ return view('test');});

@@ -42,7 +42,7 @@
                 <div class="content-area">
                     @include('shared.alert-message')
 
-                    <h2>ผลการค้นหาจากรายการวัตถุดิบ พบ --- รายการ</h2>
+                    <h2>ผลการค้นหาจากรายการวัตถุดิบ พบ {{$results}} รายการ</h2>
 
                     <!-- Sorting Dropdown -->
                     <div class="mb-3">

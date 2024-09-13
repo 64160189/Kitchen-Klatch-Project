@@ -161,14 +161,16 @@ class postcontroller extends Controller
        // Search posts by title
         $posts = PostModel::where('title', 'like', "%$search%")->orderBy($sort, $order)->paginate(5);
 
-            // Decode JSON fields for each post
-            foreach ($posts as $post) {
-                $post->ingrediant = json_decode($post->ingrediant, true);
-                $post->htc = json_decode($post->htc, true);
-            }
+        // Decode JSON fields for each post
+        foreach ($posts as $post) {
+            $post->ingrediant = json_decode($post->ingrediant, true);
+            $post->htc = json_decode($post->htc, true);
+        }
+
+        $results = $posts->total();
 
         // Return the view with the search results
-        return view('posts/search_title_results', compact('posts', 'search', 'sort', 'order'));
+        return view('posts/search_title_results', compact('posts', 'search', 'sort', 'order' , 'results'));
     }
 
     public function fentchTitle(Request $request){
@@ -249,74 +251,77 @@ class postcontroller extends Controller
                 ['path' => LengthAwarePaginator::resolveCurrentPath()]
             );
         }
-                    // Decode JSON fields for each post
-            foreach ($posts as $post) {
-                $post->ingrediant = json_decode($post->ingrediant, true);
-                $post->htc = json_decode($post->htc, true);
-            }
-
-        // Return the view with the search results
-        return view('posts.search_ingredients_results', compact('posts', 'sort', 'order', 'ingredientsArray'));
-    }
-
-
-public function fentchIngredients(Request $request) {
-    $inputIngredients = $request->input('ingredients', '');
-    $ingredientsArray = array_filter(explode(',', $inputIngredients));
-
-    $sort = $request->input('sort', 'matching');
-    $order = $request->input('order', 'desc');
-
-    if (empty($ingredientsArray)) {
-        // If no ingredients are provided, fetch all posts
-        $posts = PostModel::orderBy('id', $order)->paginate(5);
-    } else {
-        // Fetch posts that have ingredients similar to the input ingredients
-        $allPosts = PostModel::where(function ($query) use ($ingredientsArray) {
-            foreach ($ingredientsArray as $ingredient) {
-                $query->orWhere('ingrediant', 'like', '%' . trim($ingredient) . '%');
-            }
-        })->get();
-
-        // Calculate matching count for each post
-        foreach ($allPosts as $post) {
-            $postIngredients = json_decode($post->ingrediant, true);
-            $matches = array_filter($ingredientsArray, function($ingredient) use ($postIngredients) {
-                foreach ((array) $postIngredients as $postIngredient) {
-                    if (stripos($postIngredient, $ingredient) !== false) {
-                        return true;
-                    }
-                }
-                return false;
-            });
-            $post->matching = count($matches);
+        
+        // Decode JSON fields for each post
+        foreach ($posts as $post) {
+            $post->ingrediant = json_decode($post->ingrediant, true);
+            $post->htc = json_decode($post->htc, true);
         }
 
-        // Sort the posts by matching count or any other selected sort option
-        $sortedPosts = $allPosts->sortBy([
-            [$sort, $order]
-        ]);
+        $results = $posts->total();
 
-        // Paginate the sorted posts manually
-        $page = LengthAwarePaginator::resolveCurrentPage();
-        $perPage = 5;
-        $posts = new LengthAwarePaginator(
-            $sortedPosts->forPage($page, $perPage)->values(),
-            $sortedPosts->count(),
-            $perPage,
-            $page
-        );
+        // Return the view with the search results
+        return view('posts.search_ingredients_results', compact('posts', 'sort', 'order', 'ingredientsArray' , 'results'));
     }
 
-    // Decode JSON fields for each post
-    foreach ($posts as $post) {
-        $post->ingrediant = json_decode($post->ingrediant, true);
-        $post->htc = json_decode($post->htc, true);
-    }
 
-    // Return the posts as JSON
-    return response()->json($posts);
-}
+    public function fentchIngredients(Request $request) {
+        $inputIngredients = $request->input('ingredients', '');
+        $ingredientsArray = array_filter(explode(',', $inputIngredients));
+
+        $sort = $request->input('sort', 'matching');
+        $order = $request->input('order', 'desc');
+
+        if (empty($ingredientsArray)) {
+            // If no ingredients are provided, fetch all posts
+            $posts = PostModel::orderBy('id', $order)->paginate(5);
+        } else {
+            // Fetch posts that have ingredients similar to the input ingredients
+            $allPosts = PostModel::where(function ($query) use ($ingredientsArray) {
+                foreach ($ingredientsArray as $ingredient) {
+                    $query->orWhere('ingrediant', 'like', '%' . trim($ingredient) . '%');
+                }
+            })->get();
+
+            // Calculate matching count for each post
+            foreach ($allPosts as $post) {
+                $postIngredients = json_decode($post->ingrediant, true);
+                $matches = array_filter($ingredientsArray, function($ingredient) use ($postIngredients) {
+                    foreach ((array) $postIngredients as $postIngredient) {
+                        if (stripos($postIngredient, $ingredient) !== false) {
+                            return true;
+                        }
+                    }
+                    return false;
+                });
+                $post->matching = count($matches);
+            }
+
+            // Sort the posts by matching count or any other selected sort option
+            $sortedPosts = $allPosts->sortBy([
+                [$sort, $order]
+            ]);
+
+            // Paginate the sorted posts manually
+            $page = LengthAwarePaginator::resolveCurrentPage();
+            $perPage = 5;
+            $posts = new LengthAwarePaginator(
+                $sortedPosts->forPage($page, $perPage)->values(),
+                $sortedPosts->count(),
+                $perPage,
+                $page
+            );
+        }
+
+        // Decode JSON fields for each post
+        foreach ($posts as $post) {
+            $post->ingrediant = json_decode($post->ingrediant, true);
+            $post->htc = json_decode($post->htc, true);
+        }
+
+        // Return the posts as JSON
+        return response()->json($posts);
+    }
     
 
     public function ingredientsSearchPredictions(Request $request) {
