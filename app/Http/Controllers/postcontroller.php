@@ -95,7 +95,7 @@ class postcontroller extends Controller
 
         // Check if the authenticated user is the owner or an admin
         if (!(Auth::user()->is_admin || Auth::user()->id == $post->user_id)) {
-            return redirect('/')->with('error', 'you do not have permission to do that.');
+            return redirect('/')->with('error', "you don't have permission to do that.");
         }
 
         $post->delete();
@@ -108,7 +108,7 @@ class postcontroller extends Controller
 
         // Check if the authenticated user is the owner
         if (Auth::user()->id !== $post->user_id) {
-            return redirect('/')->with('error', 'you do not have permission to do that.');
+            return redirect('/')->with('error', "you don't have permission to do that.");
         }
 
         $post->ingrediant = json_decode($post->ingrediant, true);
@@ -158,7 +158,7 @@ class postcontroller extends Controller
         $sort = $request->sort ?? 'id';
         $order = $request->order ?? 'desc';
 
-       // Search posts by title
+        // Search posts by title
         $posts = PostModel::where('title', 'like', "%$search%")->orderBy($sort, $order)->paginate(5);
 
         // Decode JSON fields for each post
@@ -264,7 +264,6 @@ class postcontroller extends Controller
         return view('posts.search_ingredients_results', compact('posts', 'sort', 'order', 'ingredientsArray' , 'results'));
     }
 
-
     public function fentchIngredients(Request $request) {
         $inputIngredients = $request->input('ingredients', '');
         $ingredientsArray = array_filter(explode(',', $inputIngredients));
@@ -323,7 +322,6 @@ class postcontroller extends Controller
         return response()->json($posts);
     }
     
-
     public function ingredientsSearchPredictions(Request $request) {
         $search = $request->get('search');
 

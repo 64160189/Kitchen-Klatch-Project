@@ -96,11 +96,12 @@
                     <ul class="navbar-nav me-auto">
 
                     </ul>
+                    
                     {{-- search bar --}}
                     <form class="d-flex mb-1 mt-1 position-relative" role="search" method="get"
                         action="{{ route('title.search') }}">
                         <input class="form-control me-2" id="search-input" type="search" name="search"
-                            placeholder="ค้นหาชื่อเมนู" aria-label="Search" autocomplete="off">
+                            placeholder="ค้นหาชื่อเมนู" value="{{ isset($search) ? $search : ''}}" aria-label="Search" autocomplete="off">
                         <button class="btn btn-danger" type="submit">ค้นหา</button>
                         <ul id="title-suggestions" class="list-group position-absolute w-100"
                             style="top: 100%; z-index: 1000;"></ul>

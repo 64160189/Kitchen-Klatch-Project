@@ -1,6 +1,6 @@
 <?php
 use App\Http\Controllers\CommentController;
-use App\Http\Controllers\HomeController;
+use App\Http\Controllers\AdminController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\LoginController;
@@ -38,9 +38,13 @@ Route::get('/email/verify/{id}/{hash}', [VerificationController::class, 'verify'
 Route::post('/email/resend', [VerificationController::class, 'resend'])->name('verification.resend');
 
 // Admin Routes
-Route::get('/admin/home', [HomeController::class, 'adminHome'])
-    ->name('admin.home')
-    ->middleware(IsAdmin::class);
+Route::get('/admin/home', [AdminController::class, 'adminHome'])->name('admin.home')->middleware(IsAdmin::class);
+Route::get('/admin/table/user', [AdminController::class, 'usersTable'])->name('table.user')->middleware(IsAdmin::class);
+Route::get('/admin/table/post', [AdminController::class, 'postsTable'])->name('table.post')->middleware(IsAdmin::class);
+Route::get('/admin/table/user/search', [AdminController::class, 'userSearch'])->name('search.user')->middleware(Isadmin::class);
+Route::get('/admin/table/post/search', [AdminController::class, 'postSearch'])->name('search.post')->middleware(Isadmin::class);
+Route::get('/admin/table/user/search/predictions', [AdminController::class, 'userSearchPredictions'])->name('user.predictions');
+Route::get('/admin/table/post/search/predictions', [AdminController::class, 'postSearchPredictions'])->name('post.predictions');
 
 // Require login for creating and storing posts
 Route::middleware(['auth'])->group(function () {
@@ -48,10 +52,8 @@ Route::middleware(['auth'])->group(function () {
         return view('posts/create_post');
     });
     Route::post('/insert_post', [PostController::class, 'storePost'])->name('post.store');
-});
 
 // Delete & Edit Post
-Route::middleware(['auth'])->group(function () {
     Route::delete('delete_post/{id}', [PostController::class, 'deletePost'])->name('post.destroy');
     Route::get('edit_post/{id}', [PostController::class, 'editPost'])->name('post.edit');
     Route::put('/update_post/{id}', [PostController::class, 'updatePost'])->name('post.update');

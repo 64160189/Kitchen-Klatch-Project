@@ -1,0 +1,16 @@
+/* Show/hide based on screen width */
+@media (max-width: 800px) {
+    .sidebar-normal {
+        display: none;
+    }
+}
+
+@media (min-width: 801px) {
+    .sidebar-normal {
+        display: block;
+    }
+
+    .navbar-toggler {
+        display: none;
+    }
+}

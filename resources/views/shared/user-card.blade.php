@@ -10,7 +10,7 @@
                         <a href="{{ route('users.show', ['user' => $user->id]) }}"
                             class="text-decoration-none text-primary">{{ $user->name }}</a>
                     </h3>
-                    <span class="fs-6 text-muted">{{ $user->email }}</span>
+                    <span class="fs-6 text-muted">#{{ $user->id }}</span>
                 </div>
             </div>
             @auth()
