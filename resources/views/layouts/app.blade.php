@@ -110,11 +110,17 @@
                     <!-- Left Side Of Navbar -->
                     <ul class="navbar-nav me-auto"></ul>
 
+<<<<<<< HEAD
                     {{-- Search Bar --}}
+=======
+                    </ul>
+                    
+                    {{-- search bar --}}
+>>>>>>> ebd0e62eed00c6f04d9d58e62d72fe3643802664
                     <form class="d-flex mb-1 mt-1 position-relative" role="search" method="get"
                         action="{{ route('title.search') }}">
                         <input class="form-control me-2" id="search-input" type="search" name="search"
-                            placeholder="ค้นหาชื่อเมนู" aria-label="Search" autocomplete="off">
+                            placeholder="ค้นหาชื่อเมนู" value="{{ isset($search) ? $search : ''}}" aria-label="Search" autocomplete="off">
                         <button class="btn btn-danger" type="submit">ค้นหา</button>
                         <ul id="title-suggestions" class="list-group position-absolute w-100"
                             style="top: 100%; z-index: 1000;"></ul>

@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Pagination\LengthAwarePaginator;
 use App\Models\Feed;
 
-class PostController extends Controller
+class postcontroller extends Controller
 {
     public function showPost()
     {

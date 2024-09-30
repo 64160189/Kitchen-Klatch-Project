@@ -24,13 +24,10 @@ class User extends Authenticatable
         'remember_token',
     ];
 
-    protected function casts(): array
-    {
-        return [
-            'email_verified_at' => 'datetime',
-            'password' => 'hashed',
-        ];
-    }
+    protected $casts = [
+        'email_verified_at' => 'datetime',
+        'password' => 'hashed',
+    ];
 
     public function posts()
     {
@@ -59,11 +56,15 @@ class User extends Authenticatable
 
     public function getImageURL()
     {
-        if ($this->image) {
-            return url('storage/' . $this->image);
+        // ตรวจสอบว่ามีภาพอยู่
+        if (!empty($this->image)) {
+            return url('storage/' . $this->image); // สร้าง URL สำหรับภาพที่เก็บไว้
         }
-        return "https://api.dicebear.com/6.x/fun-emoji/svg?seed={$this->name}";
+
+        // ถ้าไม่มีภาพ ให้ใช้ URL สำหรับ emoji
+        return "https://api.dicebear.com/6.x/fun-emoji/svg?seed=" . urlencode($this->name);
     }
+
 
     public function feeds()
     {

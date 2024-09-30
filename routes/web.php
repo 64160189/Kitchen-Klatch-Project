@@ -1,7 +1,6 @@
 <?php
 
 use App\Http\Controllers\CommentController;
-
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\LoginController;
@@ -9,7 +8,7 @@ use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\Auth\ForgotPasswordController;
 use App\Http\Controllers\Auth\ResetPasswordController;
 use App\Http\Controllers\Auth\VerificationController;
-use App\Http\Controllers\PostController;
+use App\Http\Controllers\postcontroller;
 use App\Http\Middleware\IsAdmin;
 use App\Http\Controllers\FollowerController;
 use App\Http\Controllers\NotificationController;
@@ -38,7 +37,7 @@ Route::get('/notifications/read/{id}', [NotificationController::class, 'read'])-
 
 
 // Home Route
-Route::get('/', [PostController::class, 'showPost'])->name('home');
+Route::get('/', [postcontroller::class, 'showPost'])->name('home');
 
 Auth::routes();
 
@@ -76,22 +75,22 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/create_post', function () {
         return view('posts.create_post');
     });
-    Route::post('/insert_post', [PostController::class, 'storePost'])->name('post.store');
+    Route::post('/insert_post', [postcontroller::class, 'storePost'])->name('post.store');
 
     // Delete & Edit Post
-    Route::delete('/delete_post/{id}', [PostController::class, 'deletePost'])->name('post.destroy');
-    Route::get('/edit_post/{id}', [PostController::class, 'editPost'])->name('post.edit');
-    Route::put('/update_post/{id}', [PostController::class, 'updatePost'])->name('post.update');
+    Route::delete('/delete_post/{id}', [postcontroller::class, 'deletePost'])->name('post.destroy');
+    Route::get('/edit_post/{id}', [postcontroller::class, 'editPost'])->name('post.edit');
+    Route::put('/update_post/{id}', [postcontroller::class, 'updatePost'])->name('post.update');
 
     // Share Post to Feed
-    Route::post('/posts/{post}/share-to-feed', [PostController::class, 'shareToFeed'])->name('post.shareToFeed');
-    Route::get('/users/{user}/posts', [PostController::class, 'fetchUserPosts'])->name('user.posts');
+    Route::post('/posts/{post}/share-to-feed', [postcontroller::class, 'shareToFeed'])->name('post.shareToFeed');
+    Route::get('/users/{user}/posts', [postcontroller::class, 'fetchUserPosts'])->name('user.posts');
 
     // User Posts
-    Route::get('/users/{user}/posts', [PostController::class, 'fetchUserPosts'])->name('user.posts'); // สำหรับโพสต์ของผู้ใช้
+    Route::get('/users/{user}/posts', [postcontroller::class, 'fetchUserPosts'])->name('user.posts'); // สำหรับโพสต์ของผู้ใช้
 
     // ดึงโพสต์ทั้งหมด
-    Route::get('/posts', [PostController::class, 'fetchPosts'])->name('posts.all');
+    Route::get('/posts', [postcontroller::class, 'fetchPosts'])->name('posts.all');
 
 
     // Comment on Post
@@ -99,8 +98,8 @@ Route::middleware(['auth'])->group(function () {
 });
 
 // Fetch posts for viewing
-Route::get('/posts', [PostController::class, 'fetchPosts'])->name('posts.fetch');
-Route::get('/post/{id}', [PostController::class, 'showFullPost'])->name('post.show');
+Route::get('/posts', [postcontroller::class, 'fetchPosts'])->name('posts.fetch');
+Route::get('/post/{id}', [postcontroller::class, 'showFullPost'])->name('post.show');
 
 // User Routes
 Route::resource('users', UserController::class)->only(['show', 'edit', 'update'])->middleware('auth');
@@ -111,16 +110,16 @@ Route::post('users/{user}/follow', [FollowerController::class, 'follow'])->middl
 Route::post('users/{user}/unfollow', [FollowerController::class, 'unfollow'])->middleware('auth')->name('users.unfollow');
 
 // Search Routes
-Route::get('/title/search', [PostController::class, 'titleSearch'])->name('title.search');
-Route::get('/ingredients/search', [PostController::class, 'searchByIngredients'])->name('ingredients.search');
+Route::get('/title/search', [postcontroller::class, 'titleSearch'])->name('title.search');
+Route::get('/ingredients/search', [postcontroller::class, 'searchByIngredients'])->name('ingredients.search');
 
 // Fetch more search results
-Route::get('/title/fetch', [PostController::class, 'fetchTitle'])->name('fetch.search.title');
-Route::get('/ingredients/fetch', [PostController::class, 'fetchIngredients'])->name('fetch.search.ingredients');
+Route::get('/title/fetch', [postcontroller::class, 'fetchTitle'])->name('fetch.search.title');
+Route::get('/ingredients/fetch', [postcontroller::class, 'fetchIngredients'])->name('fetch.search.ingredients');
 
 // Search predictions
-Route::get('/title/predictions', [PostController::class, 'titleSearchPredictions'])->name('title.predictions');
-Route::get('/ingredients/predictions', [PostController::class, 'ingredientsSearchPredictions'])->name('ingredients.predictions');
+Route::get('/title/predictions', [postcontroller::class, 'titleSearchPredictions'])->name('title.predictions');
+Route::get('/ingredients/predictions', [postcontroller::class, 'ingredientsSearchPredictions'])->name('ingredients.predictions');
 
 // Store ingredients in a session
-Route::post('/store-ingredients', [PostController::class, 'storeIngredients'])->name('store.ingredients');
+Route::post('/store-ingredients', [postcontroller::class, 'storeIngredients'])->name('store.ingredients');

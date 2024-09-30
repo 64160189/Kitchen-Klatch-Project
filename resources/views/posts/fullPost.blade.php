@@ -1,13 +1,13 @@
 @extends('layouts.app')
 
 @section('content')
-<style>
-    .back-button {
-        display: flex;
-        width: 50px;
-        height: 38px;
-    }
-</style>
+    <style>
+        .back-button {
+            display: flex;
+            width: 50px;
+            height: 38px;
+        }
+    </style>
 
 <div class="container">
     <div class="row">
@@ -89,56 +89,88 @@
                 </div>
             </div>
 
-            <div class="card card-body mb-3 shadow">
-                <h3 class="card-title">วัตถุดิบ:</h3>
-                <ol class="card-text">
-                    @if (is_array($post->ingrediant))
-                        @foreach ($post->ingrediant as $ingredient)
-                            <li>{{ $ingredient }}</li>
-                        @endforeach
-                    @else
-                        <li>ข้อมูลวัตถุดิบไม่ถูกต้อง</li>
-                    @endif
-                </ol>
-            </div>
-
-            <div class="card mb-3 shadow">
-                @if ($post->youtube_link)
-                                @php
-                                    $video_id = '';
-                                    // ดึง video_id จากลิงก์ YouTube แบบปกติ
-                                    if (preg_match('/[\\?\\&]v=([^\\?\\&]+)/', $post->youtube_link, $matches)) {
-                                        $video_id = $matches[1];
-                                    }
-
-                                    // ดึง video_id จากลิงก์ YouTube แบบสั้น
-                                    if (
-                                        !$video_id &&
-                                        preg_match('/youtu\\.be\\/([^\\?\\&]+)/', $post->youtube_link, $matches)
-                                    ) {
-                                        $video_id = $matches[1];
-                                    }
-                                @endphp
-                                @if ($video_id)
-                                    <div class="embed-responsive embed-responsive-16by9">
-                                        <iframe class="embed-responsive-item card-img-top"
-                                            src="https://www.youtube.com/embed/{{ $video_id }}" allowfullscreen width="100%"
-                                            height="400px"></iframe>
-                                    </div>
-                                @endif
+            <!-- content area -->
+            <div class="col-8">
+                @if (session('error'))
+                    <div class="alert alert-danger">
+                        {{ session('error') }}
+                    </div>
+                @endif
+                @if (session('success'))
+                    <div class="alert alert-success">
+                        {{ session('success') }}
+                    </div>
                 @endif
 
-                <div class="card-body">
-                    <h3 class="card-title">วิธีทำ:</h3>
+                <div class="card mb-3 shadow">
+                    <img class="card-img-top" src="{{ asset('storage/' . $post->image) }}" alt="{{ $post->title }}"
+                        style="width:100%; height:auto; max-height:1000px">
+                    <div class="card-body">
+                        <h1 class="card-title">{{ $post->title }}</h1>
+                        <p class="card-text">{{ $post->description }}</p>
+                    </div>
+                </div>
+
+                <div class="card card-body mb-3 shadow">
+                    <h3 class="card-title">วัตถุดิบ:</h3>
                     <ol class="card-text">
-                        @if (is_array($post->htc))
-                            @foreach ($post->htc as $step)
-                                <p>..{{ $step }}</p>
+                        @if (is_array($post->ingrediant))
+                            @foreach ($post->ingrediant as $ingredient)
+                                <li>{{ $ingredient }}</li>
                             @endforeach
                         @else
-                            <li>ข้อมูลวิธีทำไม่ถูกต้อง</li>
+                            <li>ข้อมูลวัตถุดิบไม่ถูกต้อง</li>
                         @endif
                     </ol>
+                </div>
+
+                <div class="card mb-3 shadow">
+                    @if ($post->youtube_link)
+                        @php
+                            $video_id = '';
+                            // ดึง video_id จากลิงก์ YouTube แบบปกติ
+                            if (preg_match('/[\\?\\&]v=([^\\?\\&]+)/', $post->youtube_link, $matches)) {
+                                $video_id = $matches[1];
+                            }
+
+                            // ดึง video_id จากลิงก์ YouTube แบบสั้น
+                            if (
+                                !$video_id &&
+                                preg_match('/youtu\\.be\\/([^\\?\\&]+)/', $post->youtube_link, $matches)
+                            ) {
+                                $video_id = $matches[1];
+                            }
+                        @endphp
+                        @if ($video_id)
+                            <div class="embed-responsive embed-responsive-16by9">
+                                <iframe class="embed-responsive-item card-img-top"
+                                    src="https://www.youtube.com/embed/{{ $video_id }}" allowfullscreen width="100%"
+                                    height="400px"></iframe>
+                            </div>
+                        @endif
+                    @endif
+
+                    <div class="card-body">
+                        <h3 class="card-title">วิธีทำ:</h3>
+                        <ol class="card-text">
+                            @if (is_array($post->htc))
+                                @foreach ($post->htc as $step)
+                                    <p>..{{ $step }}</p>
+                                @endforeach
+                            @else
+                                <li>ข้อมูลวิธีทำไม่ถูกต้อง</li>
+                            @endif
+                        </ol>
+                    </div>
+                </div>
+
+
+                <div class="mb-3">
+                    @include('shared.user-card', ['user' => $post->user])
+                </div>
+
+                <div class="comments-box">
+                    @include('shared.comments-box', ['post' => $post])
                 </div>
             </div>
 
@@ -157,27 +189,26 @@
                 </div>
                 -->
     </div>
-</div>
 
-<!-- Delete Confirmation Modal -->
-<div class="modal fade" id="deleteConfirmationModal" tabindex="-1" aria-labelledby="deleteConfirmationModalLabel"
-    aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="deleteConfirmationModalLabel">Delete Confirmation</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                คุณจะลบสูตรนี้จริงๆ ใช่หรือไม่?
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">No</button>
-                <button type="button" class="btn btn-danger" id="confirmDeleteButton">Yes</button>
+    <!-- Delete Confirmation Modal -->
+    <div class="modal fade" id="deleteConfirmationModal" tabindex="-1" aria-labelledby="deleteConfirmationModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="deleteConfirmationModalLabel">Delete Confirmation</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    คุณจะลบสูตรนี้จริงๆ ใช่หรือไม่?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">No</button>
+                    <button type="button" class="btn btn-danger" id="confirmDeleteButton">Yes</button>
+                </div>
             </div>
         </div>
     </div>
-</div>
 
 
 <script>
@@ -186,11 +217,12 @@
         window.location.href = /users/${ userId };
     };
 
-    //delete post confirmation 
-    document.addEventListener('DOMContentLoaded', function () {
-        const confirmDeleteButton = document.getElementById('confirmDeleteButton');
-        confirmDeleteButton.addEventListener('click', function () {
-            document.getElementById('deleteForm').submit();
+        //delete post confirmation 
+        document.addEventListener('DOMContentLoaded', function() {
+            const confirmDeleteButton = document.getElementById('confirmDeleteButton');
+            confirmDeleteButton.addEventListener('click', function() {
+                document.getElementById('deleteForm').submit();
+            });
         });
     });
 
