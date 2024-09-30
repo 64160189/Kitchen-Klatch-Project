@@ -6,7 +6,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 
 
-class FollowerControler extends Controller
+class FollowerController extends Controller
 {
     public function follow(User $user)
     {

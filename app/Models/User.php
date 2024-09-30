@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -11,11 +10,6 @@ class User extends Authenticatable
 {
     use HasFactory, Notifiable;
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array<int, string>
-     */
     protected $fillable = [
         'name',
         'bio',
@@ -25,21 +19,11 @@ class User extends Authenticatable
         'is_admin',
     ];
 
-    /**
-     * The attributes that should be hidden for serialization.
-     *
-     * @var array<int, string>
-     */
     protected $hidden = [
         'password',
         'remember_token',
     ];
 
-    /**
-     * Get the attributes that should be cast.
-     *
-     * @return array<string, string>
-     */
     protected function casts(): array
     {
         return [
@@ -47,16 +31,15 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+
     public function posts()
     {
-        return $this->hasMany(PostModel::class)->latest();
+        return $this->hasMany(PostModel::class)->latest();  // <-- Change PostModel::class to Post::class
     }
 
     public function followings()
     {
         return $this->belongsToMany(User::class, 'follower_user', 'follower_id', 'user_id')->withTimestamps();
-
-
     }
 
     public function comments()
@@ -67,7 +50,6 @@ class User extends Authenticatable
     public function followers()
     {
         return $this->belongsToMany(User::class, 'follower_user', 'user_id', 'follower_id')->withTimestamps();
-
     }
 
     public function follows(User $user)
@@ -81,5 +63,21 @@ class User extends Authenticatable
             return url('storage/' . $this->image);
         }
         return "https://api.dicebear.com/6.x/fun-emoji/svg?seed={$this->name}";
+    }
+
+    public function feeds()
+    {
+        return $this->hasMany(Feed::class);
+    }
+
+    public function sharedPosts()
+    {
+        return $this->hasManyThrough(PostModel::class, Feed::class, 'user_id', 'id', 'id', 'post_id');
+    }
+    use Notifiable;
+
+    public function notifications()
+    {
+        return $this->hasMany(Notification::class);
     }
 }

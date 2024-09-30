@@ -9,52 +9,66 @@
     }
 </style>
 
-<div class="container-fluid">
+<div class="container">
     <div class="row">
         <!-- left sidebar (menu) -->
         <div class="col-2">
+            <div class="fixed-bottom m-2">
+                <!-- (menu) -->
+                <div class="btn-group dropup mb-2" role="group">
+                    <button type="button" class="btn btn-outline-danger rounded" data-bs-toggle="dropdown"
+                        aria-expanded="false">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="26" height="16" fill="currentColor"
+                            class="bi bi-three-dots-vertical" viewBox="0 0 16 16">
+                            <path
+                                d="M9.5 13a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0m0-5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0m0-5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0" />
+                        </svg>
+                    </button>
+                    <ul class="dropdown-menu">
+                        @if (Auth::check() && Auth::user()->id == $post->user_id)
+                            <!-- edit -->
+                            <li><a class="dropdown-item" href="{{ route('post.edit', $post->id) }}">แก้ไขสูตรอาหาร</a>
+                            </li>
+                            <!-- delete -->
+                            <li>
+                                <form id="deleteForm" action="{{ route('post.destroy', $post->id) }}" method="POST">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="button" class="dropdown-item" data-bs-toggle="modal"
+                                        data-bs-target="#deleteConfirmationModal">ลบสูตรอาหาร</button>
+                                </form>
+                            </li>
+                        @else
+                            <li><a class="dropdown-item" href="#">รายงานสูตรอาหารนี้</a></li>
+                            <li>
+                                <form action="{{ route('post.shareToFeed', $post->id) }}" method="POST">
+                                    @csrf
+                                    <button type="submit" class="dropdown-item">แชร์ไปยังฟีดของคุณ</button>
+                                </form>
+                            </li>
+                            <li>
+                                <button type="button" class="dropdown-item" onclick="sharePost()">แชร์สูตรอาหาร</button>
+                            </li>
+                        @endif
+                        <!-- share -->
 
-            <!-- (menu) -->
-            <div class="btn-group dropup sticky-top" role="group" style="top:85%;">
-                <button type="button" class="btn btn-outline-danger rounded" data-bs-toggle="dropdown"
-                    aria-expanded="false">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="26" height="16" fill="currentColor"
-                        class="bi bi-three-dots-vertical" viewBox="0 0 16 16">
-                        <path
-                            d="M9.5 13a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0m0-5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0m0-5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0" />
-                    </svg>
-                </button>
-                <ul class="dropdown-menu">
-                    @if (Auth::check() && Auth::user()->id == $post->user_id)
-                        <!-- edit -->
-                        <li><a class="dropdown-item" href="{{ route('post.edit', $post->id) }}">แก้ไขสูตรอาหาร</a></li>
-                        <!-- delete -->
-                        <li>
-                            <form id="deleteForm" action="{{ route('post.destroy', $post->id) }}" method="POST">
-                                @csrf
-                                @method('DELETE')
-                                <button type="button" class="dropdown-item" data-bs-toggle="modal"
-                                    data-bs-target="#deleteConfirmationModal">ลบสูตรอาหาร</button>
-                            </form>
-                        </li>
-                    @else
-                        <li><a class="dropdown-item" href="#">รายงานสูตรอาหารนี้</a></li>
-                    @endif
-                </ul>
-            </div>
-            <!-- (back) -->
-            <div class="sticky-top" style="top: 92%;">
-                <button class="back-button btn btn-outline-danger" onclick="window.history.back();">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
-                        stroke="currentColor" class="size-3">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18" />
-                    </svg>
-                </button>
+                    </ul>
+                </div>
+                <!-- (back) -->
+                <div>
+                    <button class="back-button btn btn-danger" onclick="window.history.back();">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                            stroke="currentColor" class="size-3">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18" />
+                        </svg>
+                    </button>
+                </div>
             </div>
         </div>
 
         <!-- content area -->
-        <div class="col">
+        <div class="col-8">
             @if (session('error'))
                 <div class="alert alert-danger">
                     {{ session('error') }}
@@ -127,14 +141,21 @@
                     </ol>
                 </div>
             </div>
+
+
+            <div class="mb-3">
+                @include('shared.user-card', ['user' => $post->user])
+            </div>
+
             <div class="comments-box">
                 @include('shared.comments-box', ['post' => $post])
             </div>
         </div>
-        <!-- right sidebar (user) -->
-        <div class="col-3 post-user border" onclick="goToUser({{ $post->user->id }})">
-            @include('shared.user-card', ['user' => $post->user])
-        </div>
+        <!-- right sidebar (user)
+                <div class="col-3 post-user border">
+                    {{-- @include('shared.user-card', ['user' => $post->user]) --}}
+                </div>
+                -->
     </div>
 </div>
 
@@ -162,7 +183,7 @@
 <script>
     //go to user function
     function goToUser(userId) {
-        window.location.href = `/users/${userId}`;
+        window.location.href = /users/${ userId };
     };
 
     //delete post confirmation 
@@ -172,5 +193,22 @@
             document.getElementById('deleteForm').submit();
         });
     });
+
+    // share post function
+    function sharePost() {
+        if (navigator.share) {
+            navigator.share({
+                title: '{{ $post->title }}',
+                text: '{{ $post->description }}',
+                url: window.location.href
+            }).then(() => {
+                console.log('Post shared successfully.');
+            }).catch((error) => {
+                console.error('Error sharing post:', error);
+            });
+        } else {
+            alert('Sharing is not supported in this browser.');
+        }
+    }
 </script>
 @endsection
