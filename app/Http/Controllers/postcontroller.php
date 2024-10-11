@@ -8,14 +8,15 @@ use Illuminate\Support\Facades\DB;
 use App\Models\PostModel;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Pagination\LengthAwarePaginator;
-
-
+use App\Models\User;
+use App\Models\Feed;
 
 class postcontroller extends Controller
 {
-    public function showPost(){
+    public function showPost()
+    {
         // Fetch posts ordered by id in descending order and paginate
-        $posts = DB::table('post_models')->orderBy('id', 'desc')->paginate(5);
+        $posts = PostModel::orderBy('id', 'desc')->paginate(5);
 
         // Decode the JSON fields for each post
         foreach ($posts as $post) {
@@ -26,9 +27,10 @@ class postcontroller extends Controller
         return view('home', compact('posts'));
     }
 
-    public function fetchPosts(Request $request){
+    public function fetchPosts(Request $request)
+    {
         // Fetch posts ordered by id in descending order and paginate
-        $posts = DB::table('post_models')->orderBy('id', 'desc')->paginate(5);
+        $posts = PostModel::orderBy('id', 'desc')->paginate(5);
 
         // Decode the JSON fields for each post
         foreach ($posts as $post) {
@@ -40,7 +42,8 @@ class postcontroller extends Controller
         return response()->json($posts);
     }
 
-    public function storePost(Request $request) {
+    public function storePost(Request $request)
+    {
         $request->validate([
             'title' => 'required|string|max:255',
             'description' => 'required|string',
@@ -53,14 +56,12 @@ class postcontroller extends Controller
         $ingrediants = explode(PHP_EOL, $request->input('ingrediant'));
         $htc = explode(PHP_EOL, $request->input('htc'));
 
-        if ($request->hasFile('image')) {
-            $imagePath = $request->file('image')->store('images', 'public');
-        }
+        $imagePath = $request->hasFile('image') ? $request->file('image')->store('images', 'public') : '';
 
         PostModel::create([
             'title' => $request->input('title'),
             'description' => $request->input('description'),
-            'image' => $imagePath ?? '',
+            'image' => $imagePath,
             'ingrediant' => json_encode($ingrediants, JSON_UNESCAPED_UNICODE),
             'htc' => json_encode($htc, JSON_UNESCAPED_UNICODE),
             'youtube_link' => $request->input('youtube_link'),
@@ -70,27 +71,22 @@ class postcontroller extends Controller
         return redirect('/')->with('success', 'Post created successfully.');
     }
 
-    public function showFullPost($id){
+    public function showFullPost($id)
+    {
         $post = PostModel::with('user')->find($id);
 
         if (!$post) {
             return redirect('/')->with('error', 'Post not found.');
         }
 
-        // Check if $post->ingrediant is a string before decoding
-        if (is_string($post->ingrediant)) {
-            $post->ingrediant = json_decode($post->ingrediant, true);
-        }
-
-        // Check if $post->htc is a string before decoding
-        if (is_string($post->htc)) {
-            $post->htc = json_decode($post->htc, true);
-        }
+        $post->ingrediant = json_decode($post->ingrediant, true) ?? [];
+        $post->htc = json_decode($post->htc, true) ?? [];
 
         return view('posts/fullpost', compact('post'));
     }
-    
-    public function deletePost($id){
+
+    public function deletePost($id)
+    {
         $post = PostModel::findOrFail($id);
 
         // Check if the authenticated user is the owner or an admin
@@ -103,7 +99,8 @@ class postcontroller extends Controller
         return redirect('/')->with('success', 'Post deleted successfully.');
     }
 
-    public function editPost($id) {
+    public function editPost($id)
+    {
         $post = PostModel::findOrFail($id);
 
         // Check if the authenticated user is the owner
@@ -116,12 +113,13 @@ class postcontroller extends Controller
         return view('posts.edit_post', compact('post'));
     }
 
-    public function updatePost(Request $request, $id) {
+    public function updatePost(Request $request, $id)
+    {
         $post = PostModel::findOrFail($id);
 
         // Check if the authenticated user is the owner
         if (Auth::user()->id !== $post->user_id) {
-            return redirect('/')->with('error', 'you do not have permission to do that.');
+            return redirect('/')->with('error', "you don't have permission to do that.");
         }
 
         $request->validate([
@@ -136,24 +134,22 @@ class postcontroller extends Controller
         $ingrediants = explode(PHP_EOL, $request->input('ingrediant'));
         $htc = explode(PHP_EOL, $request->input('htc'));
 
-        if ($request->hasFile('image')) {
-            $imagePath = $request->file('image')->store('images', 'public');
-        }
+        $imagePath = $request->hasFile('image') ? $request->file('image')->store('images', 'public') : $post->image;
 
-        $post->title = $request->input('title');
-        $post->description = $request->input('description');
-        if (isset($imagePath)) {
-            $post->image = $imagePath;
-        }
-        $post->ingrediant = json_encode($ingrediants, JSON_UNESCAPED_UNICODE);
-        $post->htc = json_encode($htc, JSON_UNESCAPED_UNICODE);
-        $post->youtube_link = $request->input('youtube_link');
-        $post->save();
+        $post->update([
+            'title' => $request->input('title'),
+            'description' => $request->input('description'),
+            'image' => $imagePath,
+            'ingrediant' => json_encode($ingrediants, JSON_UNESCAPED_UNICODE),
+            'htc' => json_encode($htc, JSON_UNESCAPED_UNICODE),
+            'youtube_link' => $request->input('youtube_link'),
+        ]);
 
-        return redirect()->route('post.show', ['id' => $post->id])->with('success', 'Post updated successfully.');
+        return redirect()->route('post.show', ['id' => $id])->with('success', 'Post updated successfully.');
     }
 
-    public function titleSearch(Request $request){
+    public function titleSearch(Request $request)
+    {
         $search = $request->search;
         $sort = $request->sort ?? 'id';
         $order = $request->order ?? 'desc';
@@ -170,10 +166,11 @@ class postcontroller extends Controller
         $results = $posts->total();
 
         // Return the view with the search results
-        return view('posts/search_title_results', compact('posts', 'search', 'sort', 'order' , 'results'));
+        return view('posts/search_title_results', compact('posts', 'search', 'sort', 'order', 'results'));
     }
 
-    public function fentchTitle(Request $request){
+    public function fentchTitle(Request $request)
+    {
         $search = $request->input('search', '');
         $sort = $request->input('sort', 'id');
         $order = $request->input('order', 'desc');
@@ -193,7 +190,8 @@ class postcontroller extends Controller
         return response()->json($posts->toArray());
     }
 
-    public function titleSearchPredictions(Request $request) {
+    public function titleSearchPredictions(Request $request)
+    {
         $search = $request->get('search');
         $results = PostModel::where('title', 'like', "%$search%")
             ->orderBy('id', 'desc')
@@ -203,7 +201,8 @@ class postcontroller extends Controller
         return response()->json($results);
     }
 
-    public function searchByIngredients(Request $request) {
+    public function searchByIngredients(Request $request)
+    {
         $inputIngredients = $request->input('ingredients', '');
         $ingredientsArray = array_filter(explode(',', $inputIngredients));
 
@@ -224,7 +223,7 @@ class postcontroller extends Controller
             // Calculate matching count for each post
             foreach ($allPosts as $post) {
                 $postIngredients = json_decode($post->ingrediant, true);
-                $matches = array_filter($ingredientsArray, function($ingredient) use ($postIngredients) {
+                $matches = array_filter($ingredientsArray, function ($ingredient) use ($postIngredients) {
                     foreach ((array) $postIngredients as $postIngredient) {
                         if (stripos($postIngredient, $ingredient) !== false) {
                             return true;
@@ -251,7 +250,7 @@ class postcontroller extends Controller
                 ['path' => LengthAwarePaginator::resolveCurrentPath()]
             );
         }
-        
+
         // Decode JSON fields for each post
         foreach ($posts as $post) {
             $post->ingrediant = json_decode($post->ingrediant, true);
@@ -261,10 +260,11 @@ class postcontroller extends Controller
         $results = $posts->total();
 
         // Return the view with the search results
-        return view('posts.search_ingredients_results', compact('posts', 'sort', 'order', 'ingredientsArray' , 'results'));
+        return view('posts.search_ingredients_results', compact('posts', 'sort', 'order', 'ingredientsArray', 'results'));
     }
 
-    public function fentchIngredients(Request $request) {
+    public function fentchIngredients(Request $request)
+    {
         $inputIngredients = $request->input('ingredients', '');
         $ingredientsArray = array_filter(explode(',', $inputIngredients));
 
@@ -285,7 +285,7 @@ class postcontroller extends Controller
             // Calculate matching count for each post
             foreach ($allPosts as $post) {
                 $postIngredients = json_decode($post->ingrediant, true);
-                $matches = array_filter($ingredientsArray, function($ingredient) use ($postIngredients) {
+                $matches = array_filter($ingredientsArray, function ($ingredient) use ($postIngredients) {
                     foreach ((array) $postIngredients as $postIngredient) {
                         if (stripos($postIngredient, $ingredient) !== false) {
                             return true;
@@ -321,8 +321,9 @@ class postcontroller extends Controller
         // Return the posts as JSON
         return response()->json($posts);
     }
-    
-    public function ingredientsSearchPredictions(Request $request) {
+
+    public function ingredientsSearchPredictions(Request $request)
+    {
         $search = $request->get('search');
 
         // Assuming 'ingrediant' is a comma-separated string
@@ -349,10 +350,29 @@ class postcontroller extends Controller
         return response()->json($suggestions);
     }
 
-    public function storeIngredients(Request $request) {
+    public function storeIngredients(Request $request)
+    {
         $ingredients = $request->input('ingredients');
         session(['ingredients' => $ingredients]);
         return response()->json(['status' => 'success']);
     }
 
+    public function shareToFeed(Request $request, $postId)
+    {
+        // ดึงข้อมูลผู้ใช้และโพสต์
+        $user = Auth::user();
+        $post = PostModel::findOrFail($postId);
+        // ตรวจสอบว่าผู้ใช้ได้แชร์โพสต์นี้แล้วหรือยัง
+        $alreadyShared = Feed::where('user_id', $user->id)->where('post_id', $post->id)->exists();
+        if (!$alreadyShared) {
+            // บันทึกโพสต์ลงฟีดของผู้ใช้
+            Feed::create([
+                'user_id' => $user->id,
+                'post_id' => $post->id,
+            ]);
+            return redirect()->back()->with('success', 'แชร์โพสต์ไปยังฟีดของคุณแล้ว!');
+        } else {
+            return redirect()->back()->with('error', 'คุณได้แชร์โพสต์นี้แล้ว!');
+        }
+    }
 }

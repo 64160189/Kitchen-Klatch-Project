@@ -40,7 +40,19 @@
                                 </li>
                             @else
                                 <li><a class="dropdown-item" href="#">รายงานสูตรอาหารนี้</a></li>
+                                <li>
+                                    <form action="{{ route('post.shareToFeed', $post->id) }}" method="POST">
+                                        @csrf
+                                        <button type="submit" class="dropdown-item">แชร์ไปยังฟีดของคุณ</button>
+                                    </form>
+                                </li>
+                                <li>
+                                    <button type="button" class="dropdown-item"
+                                        onclick="sharePost()">แชร์สูตรอาหาร</button>
+                                </li>
                             @endif
+                            <!-- share -->
+
                         </ul>
                     </div>
                     <!-- (back) -->
@@ -141,10 +153,10 @@
                 </div>
             </div>
             <!-- right sidebar (user)
-                <div class="col-3 post-user border">
-                    {{-- @include('shared.user-card', ['user' => $post->user]) --}}
-                </div>
-                -->
+                    <div class="col-3 post-user border">
+                        {{-- @include('shared.user-card', ['user' => $post->user]) --}}
+                    </div>
+                    -->
         </div>
     </div>
 
@@ -182,5 +194,22 @@
                 document.getElementById('deleteForm').submit();
             });
         });
+
+        // share post function
+        function sharePost() {
+            if (navigator.share) {
+                navigator.share({
+                    title: '{{ $post->title }}',
+                    text: '{{ $post->description }}',
+                    url: window.location.href
+                }).then(() => {
+                    console.log('Post shared successfully.');
+                }).catch((error) => {
+                    console.error('Error sharing post:', error);
+                });
+            } else {
+                alert('Sharing is not supported in this browser.');
+            }
+        }
     </script>
 @endsection

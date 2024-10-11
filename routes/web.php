@@ -1,4 +1,5 @@
 <?php
+
 use App\Http\Controllers\CommentController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\UserController;
@@ -10,7 +11,26 @@ use App\Http\Controllers\Auth\ResetPasswordController;
 use App\Http\Controllers\Auth\VerificationController;
 use App\Http\Controllers\postcontroller;
 use App\Http\Middleware\IsAdmin;
-use App\Http\Controllers\FollowerControler;
+use App\Http\Controllers\FollowerController;
+use App\Http\Controllers\NotificationController;
+
+// Route สำหรับขอรีเซ็ตรหัสผ่าน
+Route::get('password/reset', [ForgotPasswordController::class, 'showLinkRequestForm'])->name('password.request');
+Route::post('password/email', [ForgotPasswordController::class, 'sendResetLinkEmail'])->name('password.email');
+
+// Route สำหรับตั้งค่ารหัสผ่านใหม่
+Route::get('password/reset/{token}', [ResetPasswordController::class, 'showResetForm'])->name('password.reset');
+Route::post('password/reset', [ResetPasswordController::class, 'reset'])->name('password.update');
+
+// CommentNotification
+Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
+Route::post('/notifications/{id}/read', [NotificationController::class, 'markAsRead'])->name('notifications.read');
+Route::middleware(['auth'])->group(function () {
+    Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications');
+});
+Route::get('notifications/{id}/read', [NotificationController::class, 'read'])->name('notifications.read');
+Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
+Route::get('/notifications/read/{id}', [NotificationController::class, 'read'])->name('notifications.read');
 
 //home Route
 Route::get('/', [postcontroller::class, 'showPost'])->name('home');
@@ -51,12 +71,21 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/create_post', function () {
         return view('posts/create_post');
     });
-    Route::post('/insert_post', [PostController::class, 'storePost'])->name('post.store');
+    Route::post('/insert_post', [postController::class, 'storePost'])->name('post.store');
 
-// Delete & Edit Post
-    Route::delete('delete_post/{id}', [PostController::class, 'deletePost'])->name('post.destroy');
-    Route::get('edit_post/{id}', [PostController::class, 'editPost'])->name('post.edit');
-    Route::put('/update_post/{id}', [PostController::class, 'updatePost'])->name('post.update');
+    // Delete & Edit Post
+    Route::delete('delete_post/{id}', [postController::class, 'deletePost'])->name('post.destroy');
+    Route::get('edit_post/{id}', [postController::class, 'editPost'])->name('post.edit');
+    Route::put('/update_post/{id}', [postController::class, 'updatePost'])->name('post.update');
+    // Share Post to Feed
+    Route::post('/posts/{post}/share-to-feed', [postController::class, 'shareToFeed'])->name('post.shareToFeed');
+    Route::get('/users/{user}/posts', [postController::class, 'fetchUserPosts'])->name('user.posts');
+    // User Posts
+    Route::get('/users/{user}/posts', [postController::class, 'fetchUserPosts'])->name('user.posts'); // สำหรับโพสต์ของผู้ใช้
+    // ดึงโพสต์ทั้งหมด
+    Route::get('/posts', [PostController::class, 'fetchPosts'])->name('posts.all');
+    // Comment on Post
+    Route::post('/post/{id}/comments', [CommentController::class, 'store'])->name('post.comment.store');
 });
 
 // post routes
@@ -69,8 +98,8 @@ Route::get('profile', [UserController::class, 'profile'])->middleware('auth')->n
 // Fetch more user posts
 Route::get('/users/{user}/posts', [UserController::class, 'fetchUserPosts'])->middleware('auth');
 //follow & unfollow
-Route::post('users/{user}/follow', [FollowerControler::class, 'follow'])->middleware('auth')->name('users.follow');
-Route::post('users/{user}/unfollow', [FollowerControler::class, 'unfollow'])->middleware('auth')->name('users.unfollow');
+Route::post('users/{user}/follow', [FollowerController::class, 'follow'])->middleware('auth')->name('users.follow');
+Route::post('users/{user}/unfollow', [FollowerController::class, 'unfollow'])->middleware('auth')->name('users.unfollow');
 
 // Search Routes
 Route::get('/title/search', [postController::class, 'titleSearch'])->name('title.search');
@@ -89,4 +118,6 @@ Route::post('/store-ingredients', [postcontroller::class, 'storeIngredients']);
 Route::post('/post/{id}/comments', [CommentController::class, 'store'])->name('post.comment.store');
 
 //test
-Route::get('/test/kimhun', function(){ return view('test');});
+Route::get('/test/kimhun', function () {
+    return view('test');
+});

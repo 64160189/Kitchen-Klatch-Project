@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Comment;
 use App\Models\PostModel;
+use App\Models\Notification; // เพิ่มการนำเข้า Notification
 use Illuminate\Http\Request;
 
 class CommentController extends Controller
@@ -32,6 +33,15 @@ class CommentController extends Controller
         $comment->content = $request->input('content');
         $comment->user_id = auth()->id(); // ตั้งค่า user_id ให้กับความคิดเห็น
         $comment->save();
+
+        $userName = $comment->user->name;
+        // สร้างการแจ้งเตือนสำหรับเจ้าของโพสต์
+        $notification = new Notification();
+        $notification->user_id = $post->user_id; // เจ้าของโพสต์
+        $notification->post_id = $postId;
+        $notification->message = "{$userName} ได้แสดงความคิดเห็นในโพสต์ของคุณ: " . $post->title; // เปลี่ยนข้อความที่แสดง
+        $notification->is_read = false; // การแจ้งเตือนยังไม่ได้อ่าน
+        $notification->save();
 
         return redirect()->route('post.show', $post->id)->with('success', 'คอมเมนต์โพสต์สำเร็จ!');
     }

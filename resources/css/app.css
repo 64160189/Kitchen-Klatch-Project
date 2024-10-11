@@ -1,0 +1,7 @@
+.profile-image {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%; /* ทำให้รูปภาพเป็นวงกลม */
+    object-fit: cover; /* ทำให้รูปภาพพอดีในกรอบ */
+    overflow: hidden;
+}

@@ -3,8 +3,7 @@
         <!-- User Info Section -->
         <div class="d-flex align-items-center justify-content-between">
             <div class="d-flex align-items-center">
-                <img class="me-3 avatar-sm rounded-circle border border-dark" src="{{ $user->getImageURL() }}"
-                    alt="{{ $user->name }}" style="width: 150px;">
+                <img class="me-3 avatar-sm rounded-circle" src="{{ $user->getImageURL() }}" alt="{{ $user->name }}'s Avatar" style="width: 150px; height: 150px; object-fit: cover;">
                 <div>
                     <h3 class="card-title mb-0 text-dark">
                         <a href="{{ route('users.show', ['user' => $user->id]) }}"
@@ -31,15 +30,15 @@
             <hr class="border-secondary">
 
             <!-- Statistics Section -->
-            <div class="d-flex justify-content-start">
+            <div class="d-flex justify-content-start mb-3">
                 <a href="#" class="fw-light nav-link fs-6 me-3 text-muted">
-                    <span class="fas fa-user me-1"></span> {{ $user->followers()->count() }} Followers
+                    <span class="fas fa-user me-1" aria-hidden="true"></span> {{ $user->followers()->count() }} Followers
                 </a>
                 <a href="#" class="fw-light nav-link fs-6 me-3 text-muted">
-                    <span class="fas fa-brain me-1"></span> {{ $user->followings()->count() }} Following
+                    <span class="fas fa-brain me-1" aria-hidden="true"></span> {{ $user->followings()->count() }} Following
                 </a>
                 <a href="#" class="fw-light nav-link fs-6 text-muted">
-                    <span class="fas fa-comment me-1"></span> {{ $user->posts()->count() }} Posts
+                    <span class="fas fa-comment me-1" aria-hidden="true"></span> {{ $user->posts()->count() }} Posts
                 </a>
             </div>
 
@@ -49,12 +48,12 @@
                         @if (Auth::user()->follows($user))
                             <form method="POST" action="{{ route('users.unfollow', $user->id) }}">
                                 @csrf
-                                <button type="submit" class="btn btn-danger btn-sm">Unfollow</button>
+                                <button type="submit" class="btn btn-danger btn-sm" aria-label="Unfollow {{ $user->name }}">Unfollow</button>
                             </form>
                         @else
                             <form method="POST" action="{{ route('users.follow', $user->id) }}">
                                 @csrf
-                                <button type="submit" class="btn btn-secondary btn-sm">Follow</button>
+                                <button type="submit" class="btn btn-secondary btn-sm" aria-label="Follow {{ $user->name }}">Follow</button>
                             </form>
                         @endif
                     </div>

@@ -4,7 +4,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <!-- CSRF Token -->
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
@@ -18,6 +18,69 @@
     @vite(['resources/sass/app.scss', 'resources/js/app.js'])
 
     <style>
+        .nav-link {
+            position: relative;
+            transition: color 0.3s ease;
+            /* เพิ่มแอนิเมชันในการเปลี่ยนสี */
+        }
+
+        .nav-link:hover {
+            color: #dc3545;
+            /* สีเมื่อ hover */
+        }
+
+        #notification-count {
+            font-size: 0.55rem;
+            /* ขนาดของตัวเลข */
+            background-color: #dc3545;
+            /* สีพื้นหลังของตัวเลขแจ้งเตือน */
+            color: white;
+            /* สีตัวเลข */
+            border-radius: 50%;
+            /* ทำให้เป็นวงกลม */
+            position: absolute;
+            /* ใช้ตำแหน่งแบบ absolute */
+            top: -1px;
+            /* เลื่อนขึ้น */
+            left: -1px;
+            /* เลื่อนขวา */
+        }
+
+        .dropdown-menu {
+            background-color: #ffffff;
+            /* สีพื้นหลังเมนู dropdown */
+            border: 1px solid #dee2e6;
+            /* ขอบของ dropdown */
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            /* เงา */
+        }
+
+        .dropdown-item {
+            transition: background-color 0.2s ease;
+            /* แอนิเมชันสำหรับ background */
+        }
+
+        .dropdown-item:hover {
+            background-color: #f8f9fa;
+            /* สีเมื่อ hover บนรายการ */
+        }
+
+        .list-group-item-unread {
+            background-color: #c9c9ca;
+            /* สีสำหรับแจ้งเตือนที่ยังไม่อ่าน */
+            color: #212529;
+            /* สีข้อความ */
+        }
+
+        .list-group-item-read {
+            background-color: #e2e3e5;
+            /* สีสำหรับแจ้งเตือนที่อ่านแล้ว */
+            color: #212529;
+            /* สีข้อความ */
+            border-left: 4px solid #28a745;
+            /* เส้นข้างซ้ายเพื่อแยก */
+        }
+
         .main-content {
             display: flex;
             flex-direction: column;
@@ -96,12 +159,13 @@
                     <ul class="navbar-nav me-auto">
 
                     </ul>
-                    
+
                     {{-- search bar --}}
                     <form class="d-flex mb-1 mt-1 position-relative" role="search" method="get"
                         action="{{ route('title.search') }}">
                         <input class="form-control me-2" id="search-input" type="search" name="search"
-                            placeholder="ค้นหาชื่อเมนู" value="{{ isset($search) ? $search : ''}}" aria-label="Search" autocomplete="off">
+                            placeholder="ค้นหาชื่อเมนู" value="{{ isset($search) ? $search : '' }}" aria-label="Search"
+                            autocomplete="off">
                         <button class="btn btn-danger" type="submit">ค้นหา</button>
                         <ul id="title-suggestions" class="list-group position-absolute w-100"
                             style="top: 100%; z-index: 1000;"></ul>
@@ -125,6 +189,40 @@
                                 </li>
                             @endif
                         @else
+                            <!-- Notification Dropdown -->
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" href="#" id="notificationsDropdown" role="button"
+                                    data-bs-toggle="dropdown" aria-expanded="false">
+                                    <!-- Material Icons Bell Icon -->
+                                    <span class="material-icons">notifications_none</span>
+                                    <!-- Badge for unread notifications -->
+                                    @if (auth()->user()->notifications()->where('is_read', false)->count())
+                                        <span class="badge bg-danger" id="notification-count">
+                                            {{ auth()->user()->notifications()->where('is_read', false)->count() }}
+                                        </span>
+                                    @endif
+                                </a>
+                                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="notificationsDropdown">
+                                    @if (auth()->user()->notifications->isNotEmpty())
+                                        @foreach (auth()->user()->notifications as $notification)
+                                            <li>
+                                                <a class="dropdown-item {{ $notification->is_read ? 'list-group-item-read' : 'list-group-item-unread' }}"
+                                                    href="{{ route('notifications.read', $notification->id) }}">
+                                                    {{ $notification->message }}
+                                                    <span
+                                                        class="text-muted">({{ $notification->created_at->diffForHumans() }})</span>
+                                                </a>
+                                            </li>
+                                        @endforeach
+                                    @else
+                                        <li>
+                                            <a class="dropdown-item" href="#">ไม่มีการแจ้งเตือน</a>
+                                        </li>
+                                    @endif
+                                </ul>
+                            </li>
+
+                            {{-- profile dropdown --}}
                             <li class="nav-item dropdown">
                                 <a id="navbarDropdown" class="nav-link dropdown-toggle" href="#" role="button"
                                     data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
@@ -163,6 +261,23 @@
         </nav>
 
         <script>
+            // notification script
+            document.addEventListener('DOMContentLoaded', function () {
+                const notificationCountElement = document.getElementById('notification-count');
+                // ตรวจสอบว่าจำนวนแจ้งเตือนมีค่ามากกว่า 0
+                if (notificationCountElement) {
+                    const initialCount = parseInt(notificationCountElement.innerText);
+                    const notificationLinks = document.querySelectorAll('.dropdown-item');
+                    notificationLinks.forEach(link => {
+                        link.addEventListener('click', function () {
+                            // ลดจำนวนแจ้งเตือนเมื่อคลิก
+                            notificationCountElement.innerText = initialCount - 1;
+                            initialCount--; // ลดค่าของจำนวนแจ้งเตือน
+                        });
+                    });
+                }
+            });
+            
             // predict search script
             document.addEventListener('DOMContentLoaded', function() {
                 const searchInput = document.getElementById('search-input');
