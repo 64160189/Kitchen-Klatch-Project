@@ -20,15 +20,46 @@
 
                     <div id="post-container">
                         @foreach ($posts as $item)
-                            <div class="post-frame card mb-4 shadow bg-secondary-subtle"
-                                onclick="goToPost({{ $item->id }})">
+                            <div class="post-frame card mb-4 bg-secondary-subtle" onclick="goToPost({{ $item->id }})">
                                 <img class="card-img-top" src="{{ asset('storage/' . $item->image) }}"
                                     alt="{{ $item->title }}" style="max-height: 800px;">
                                 <div class="card-body">
-                                    <h2 class="card-title">{{ $item->title }}</h2>
-                                    <p class="card-text">{{ Str::limit($item->description, 50) }}</p>
-                                    <h3 class="card-text">วัตถุดิบ:</h3>
-                                    {{ Str::limit(is_array($item->ingrediant) ? implode(', ', $item->ingrediant) : $item->ingrediant, 50) }}
+
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                                        fill="currentColor" class="bi bi-clock" viewBox="0 0 16 16">
+                                        <path
+                                            d="M8 3.5a.5.5 0 0 0-1 0V9a.5.5 0 0 0 .252.434l3.5 2a.5.5 0 0 0 .496-.868L8 8.71z" />
+                                        <path d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16m7-8A7 7 0 1 1 1 8a7 7 0 0 1 14 0" />
+                                    </svg>
+                                    @if ($item->time_to_cook)
+                                        <span class="text-muted">{{ $item->time_to_cook }} นาที | </span>
+                                    @else
+                                        <span class="text-muted">-- | </span>
+                                    @endif
+
+                                    @if ($item->level_of_cook == 1)
+                                        <span class="card-text text-muted">ง่ายมาก</span>
+                                    @elseif ($item->level_of_cook == 2)
+                                        <span class="card-text text-muted">ค่อนข้างง่าย</span>
+                                    @elseif ($item->level_of_cook == 3)
+                                        <span class="card-text text-muted">ปานกลาง</span>
+                                    @elseif ($item->level_of_cook == 4)
+                                        <span class="card-text text-muted">ค่อนข้างยาก</span>
+                                    @else
+                                        <span class="card-text text-muted">ยาก</span>
+                                    @endif
+
+                                    <h3 class="card-title">{{ Str::limit($item->title, 50) }}</h3>
+                                    <span class="card-text">{{ Str::limit($item->description, 50) }}</span><br>
+                                    <span class="card-text">วัตถุดิบ: <span
+                                            class="text-muted">{{ Str::limit(is_array($item->ingrediant) ? implode(', ', $item->ingrediant) : $item->ingrediant, 50) }}</span></span><br>
+
+                                    {{-- user's data --}}
+                                    <img class="avatar-sm rounded-circle border border-dark mt-1"
+                                        src="{{ $item->user->getImageURL() }}" style="width: 5%;">
+                                    <a href="{{ route('users.show', ['user' => $item->user->id]) }}"
+                                        class="fw-semibold text-decoration-none text-danger">{{ Str::limit($item->user->name, 20) }}
+                                        <span class="text-muted">#{{ $item->user->id }}</span></a>
                                 </div>
                             </div>
                         @endforeach
@@ -76,12 +107,35 @@
 
                                 postFrame.innerHTML = `
                                 <img class="card-img-top" src="/storage/${post.image}" alt="${post.title}" style="max-height: 800px;">
-                                <div class="card-body">
-                                    <h2 class="card-title">${post.title}</h2>
-                                    <p class="card-text">${post.description.substring(0, 50)}...</p>
-                                    <h3 class="card-text">วัตถุดิบ:</h3>
-                                    <p class="card-text">${Array.isArray(post.ingrediant) ? post.ingrediant.join(', ').substring(0, 50) : post.ingrediant.substring(0, 50)}...</p>
-                                </div>
+                                    <div class="card-body">
+                                        
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-clock" viewBox="0 0 16 16">
+                                            <path d="M8 3.5a.5.5 0 0 0-1 0V9a.5.5 0 0 0 .252.434l3.5 2a.5.5 0 0 0 .496-.868L8 8.71z"></path>
+                                            <path d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16m7-8A7 7 0 1 1 1 8a7 7 0 0 1 14 0"></path>
+                                        </svg>
+                                        ${post.time_to_cook ? `<span>${post.time_to_cook} นาที | </span>` : `<span>-- | </span>`} 
+                                        
+                                        ${post.level_of_cook == 1 ? `<span class="card-text text-muted">ง่ายมาก</span>` :
+                                         post.level_of_cook == 2 ? `<span class="card-text text-muted">ค่อนข้างง่าย</span>` :
+                                         post.level_of_cook == 3 ? `<span class="card-text text-muted">ปานกลาง</span>` :
+                                         post.level_of_cook == 4 ? `<span class="card-text text-muted">ค่อนข้างยาก</span>` :
+                                          '<span class="card-text text-muted">ยาก</span>'} 
+
+                                        <h3 class="card-title">${post.title}</h3>
+        
+                                        <span class="card-text">${post.description ? post.description.substring(0, 50) + '...' : ''}</span><br>
+                                        
+                                        <span class="card-text">วัตถุดิบ: <span class="text-muted">${Array.isArray(post.ingrediant) ? post.ingrediant.join(', ').substring(0, 50) + '...' : post.ingrediant ? post.ingrediant.substring(0, 50) + '...' : ''}</span></span>
+
+                                        <div class="d-flex align-items-center mt-2">
+                                            <img class="avatar-sm rounded-circle border border-dark"
+                                                 src="${post.user && post.user.image_url ? post.user.getImageURL() : '/default-avatar.png'}" style="width: 5%;">
+                                            <a href="/users/${post.user ? post.user.id : ''}" class="fw-semibold text-decoration-none text-danger ms-2">
+                                            ${post.user ? post.user.name.substring(0, 20) : 'Unknown'}
+                                                <span class="text-muted">#${post.user ? post.user.id : '--'}</span>
+                                            </a>
+                                        </div>
+                                    </div>
                             `;
                                 postContainer.appendChild(postFrame);
                             });

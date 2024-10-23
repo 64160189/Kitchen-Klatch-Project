@@ -12,7 +12,7 @@ class FollowerController extends Controller
     {
         $follower = auth()->user();
 
-        $follower->following()->attach($user);
+        $follower->followings()->attach($user);
 
         return back()->with('success', "followed successfully!");
 

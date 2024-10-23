@@ -21,8 +21,8 @@ class NotificationController extends Controller
     public function index()
     {
         $notifications = Notification::where('user_id', auth()->id())
-            ->orderBy('created_at', 'desc') // เรียงจากใหม่ไปเก่า
-            ->paginate(10); // ใช้ paginate แทน get เพื่อแบ่งหน้า
+            ->orderBy('created_at', 'desc')
+            ->paginate(10);
 
         return view('notifications.index', compact('notifications'));
     }
@@ -39,7 +39,4 @@ class NotificationController extends Controller
 
         return view('partials.notifications', compact('notifications'));
     }
-
-
-
 }

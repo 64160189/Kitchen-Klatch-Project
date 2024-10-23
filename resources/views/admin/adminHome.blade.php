@@ -39,7 +39,7 @@
                                 <li class="nav-item">
                                     <a class="nav-link" href="/admin/table/user">บัญชีผู้ใช้ทั้งหมด</a>
                                     <a class="nav-link" href="/admin/table/post">โพสต์ทั้งหมด</a>
-                                    <a class="nav-link" href="#">โพสต์ที่ถูกรายงานทั้งหมด</a>
+                                    <a class="nav-link" href="{{ route('admin.viewReportedPosts') }}">โพสต์ที่ถูกรายงานทั้งหมด</a>
                                 </li>
                             </ul>
                         </div>
@@ -57,7 +57,7 @@
                     <div class="card-body">
                         <a class="nav-link" href="/admin/table/user">บัญชีผู้ใช้ทั้งหมด</a>
                         <a class="nav-link mt-2" href="/admin/table/post">โพสต์ทั้งหมด</a>
-                        <a class="nav-link mt-2" href="#">โพสต์ที่ถูกรายงานทั้งหมด</a>
+                        <a class="nav-link mt-2" href="{{ route('admin.viewReportedPosts') }}">โพสต์ที่ถูกรายงานทั้งหมด</a>
                     </div>
                 </div>
             </div>

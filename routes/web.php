@@ -13,6 +13,8 @@ use App\Http\Controllers\postcontroller;
 use App\Http\Middleware\IsAdmin;
 use App\Http\Controllers\FollowerController;
 use App\Http\Controllers\NotificationController;
+use Illuminate\Support\Facades\Auth;
+
 
 // Route สำหรับขอรีเซ็ตรหัสผ่าน
 Route::get('password/reset', [ForgotPasswordController::class, 'showLinkRequestForm'])->name('password.request');
@@ -63,20 +65,23 @@ Route::get('/admin/table/user', [AdminController::class, 'usersTable'])->name('t
 Route::get('/admin/table/post', [AdminController::class, 'postsTable'])->name('table.post')->middleware(IsAdmin::class);
 Route::get('/admin/table/user/search', [AdminController::class, 'userSearch'])->name('search.user')->middleware(Isadmin::class);
 Route::get('/admin/table/post/search', [AdminController::class, 'postSearch'])->name('search.post')->middleware(Isadmin::class);
-Route::get('/admin/table/user/search/predictions', [AdminController::class, 'userSearchPredictions'])->name('user.predictions');
-Route::get('/admin/table/post/search/predictions', [AdminController::class, 'postSearchPredictions'])->name('post.predictions');
+Route::get('/admin/table/user/search/predictions', [AdminController::class, 'userSearchPredictions'])->name('user.predictions')->middleware(Isadmin::class);
+Route::get('/admin/table/post/search/predictions', [AdminController::class, 'postSearchPredictions'])->name('post.predictions')->middleware(Isadmin::class);
+Route::get('/admin/reported-posts', [AdminController::class, 'viewReportedPosts'])->name('admin.viewReportedPosts')->middleware(Isadmin::class);
+Route::delete('/post/{id}/delete', [PostController::class, 'destroy'])->name('post.delete');
 
 // Require login for creating and storing posts
 Route::middleware(['auth'])->group(function () {
-    Route::get('/create_post', function () {
-        return view('posts/create_post');
-    });
+    Route::get('/create_post', function () {return view('posts/create_post');});
     Route::post('/insert_post', [postController::class, 'storePost'])->name('post.store');
 
     // Delete & Edit Post
     Route::delete('delete_post/{id}', [postController::class, 'deletePost'])->name('post.destroy');
     Route::get('edit_post/{id}', [postController::class, 'editPost'])->name('post.edit');
     Route::put('/update_post/{id}', [postController::class, 'updatePost'])->name('post.update');
+    //admin delete
+    Route::delete('delete_user/{id}', [AdminController::class, 'deleteUser'])->name('admin.delete.user');
+
     // Share Post to Feed
     Route::post('/posts/{post}/share-to-feed', [postController::class, 'shareToFeed'])->name('post.shareToFeed');
     Route::get('/users/{user}/posts', [postController::class, 'fetchUserPosts'])->name('user.posts');
@@ -91,6 +96,9 @@ Route::middleware(['auth'])->group(function () {
 // post routes
 Route::get('/posts', [postcontroller::class, 'fetchPosts']);
 Route::get('/post/{id}', [postcontroller::class, 'showFullPost'])->name('post.show');
+
+// Rout Post Report
+Route::post('/post/{id}/report', [PostController::class, 'report'])->name('post.report');
 
 // Users Routes
 Route::resource('users', UserController::class)->only(['show', 'edit', 'update'])->middleware('auth');
@@ -117,7 +125,10 @@ Route::post('/store-ingredients', [postcontroller::class, 'storeIngredients']);
 //Comment
 Route::post('/post/{id}/comments', [CommentController::class, 'store'])->name('post.comment.store');
 
+//random recipe
+Route::post('/random-recipe', [postController::class, 'randomRecipe'])->name('random.recipe');
+
 //test
 Route::get('/test/kimhun', function () {
-    return view('test');
+    return view('shared.loading');
 });

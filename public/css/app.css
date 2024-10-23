@@ -1,0 +1,113 @@
+.nav-link {
+    position: relative;
+    transition: color 0.3s ease;
+    /* เพิ่มแอนิเมชันในการเปลี่ยนสี */
+}
+
+.nav-link:hover {
+    color: #dc3545;
+    /* สีเมื่อ hover */
+}
+
+#notification-count {
+    font-size: 0.55rem;
+    /* ขนาดของตัวเลข */
+    background-color: #dc3545;
+    /* สีพื้นหลังของตัวเลขแจ้งเตือน */
+    color: white;
+    /* สีตัวเลข */
+    border-radius: 50%;
+    /* ทำให้เป็นวงกลม */
+    position: absolute;
+    /* ใช้ตำแหน่งแบบ absolute */
+    top: -1px;
+    /* เลื่อนขึ้น */
+    left: -1px;
+    /* เลื่อนขวา */
+}
+
+.dropdown-menu {
+    background-color: #ffffff;
+    /* สีพื้นหลังเมนู dropdown */
+    border: 1px solid #dee2e6;
+    /* ขอบของ dropdown */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    /* เงา */
+}
+
+.dropdown-item {
+    transition: background-color 0.2s ease;
+    /* แอนิเมชันสำหรับ background */
+}
+
+.dropdown-item:hover {
+    background-color: #f8f9fa;
+    /* สีเมื่อ hover บนรายการ */
+}
+
+.list-group-item-unread {
+    background-color: #c9c9ca;
+    /* สีสำหรับแจ้งเตือนที่ยังไม่อ่าน */
+    color: #212529;
+    /* สีข้อความ */
+}
+
+.list-group-item-read {
+    background-color: #e2e3e5;
+    /* สีสำหรับแจ้งเตือนที่อ่านแล้ว */
+    color: #212529;
+    /* สีข้อความ */
+    border-left: 4px solid #28a745;
+    /* เส้นข้างซ้ายเพื่อแยก */
+}
+
+.main-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.content-area {
+    width: 75%;
+    min-width: 300px;
+}
+
+.post-frame:hover {
+    cursor: pointer;
+    box-shadow: 0 0 2px 1px rgba(63, 59, 59, 0.5);
+}
+
+.card-img-top {
+    width: 100%; 
+    object-fit: cover; 
+    object-position: center;
+}
+
+.left-sidebar {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.ingredient-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #ffcccc;
+    padding: 5px 10px;
+    border-radius: 5px;
+    margin-bottom: 5px;
+}
+
+.ingredient-item button {
+    background: none;
+    border: none;
+    color: #ff0000;
+    font-size: 1.2rem;
+}
+
+#ingredient-list {
+    max-height: 300px;
+    /* Scroll bar will appear when more than 7 items */
+    overflow-y: auto;
+}

@@ -17,6 +17,8 @@ class PostModel extends Model
         'htc',
         'youtube_link',
         'user_id',
+        'time_to_cook', 
+        'level_of_cook',
     ];
 
     // ฟังก์ชันความสัมพันธ์กับผู้ใช้

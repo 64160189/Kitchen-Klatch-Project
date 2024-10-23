@@ -39,7 +39,7 @@
                                 <li class="nav-item">
                                     <a class="nav-link" href="/admin/table/user">บัญชีผู้ใช้ทั้งหมด</a>
                                     <a class="nav-link" href="/admin/table/post">โพสต์ทั้งหมด</a>
-                                    <a class="nav-link" href="#">โพสต์ที่ถูกรายงานทั้งหมด</a>
+                                    <a class="nav-link" href="{{ route('admin.viewReportedPosts') }}">โพสต์ที่ถูกรายงานทั้งหมด</a>
                                 </li>
                             </ul>
                         </div>
@@ -57,7 +57,7 @@
                     <div class="card-body">
                         <a class="nav-link" href="/admin/table/user">บัญชีผู้ใช้ทั้งหมด</a>
                         <a class="nav-link mt-2" href="/admin/table/post">โพสต์ทั้งหมด</a>
-                        <a class="nav-link mt-2" href="#">โพสต์ที่ถูกรายงานทั้งหมด</a>
+                        <a class="nav-link mt-2" href="{{ route('admin.viewReportedPosts') }}">โพสต์ที่ถูกรายงานทั้งหมด</a>
                     </div>
                 </div>
             </div>
@@ -102,7 +102,7 @@
                                 </select>
                             </div>
                         </div>
-                        
+
                         {{-- DATA --}}
                         <div class="card col-9 mt-2 shadow">
                             @foreach ($users as $user)
@@ -134,10 +134,24 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="ms-1 col-1 btn btn-warning"
-                                        style="display: flex; justify-content: center; align-items: center;">แบน</div>
-                                    <div class="ms-1 col-1 btn btn-danger"
-                                        style="display: flex; justify-content: center; align-items: center;">ลบ</div>
+                                    {{-- <div class="ms-1 col-1 btn btn-warning"
+                                        style="display: flex; justify-content: center; align-items: center;">แบน</div> --}}
+
+                                    <!-- Delete user button -->
+                                    <button type="button"
+                                        class="ms-1 col-1 btn btn-danger d-flex justify-content-center align-items-center"
+                                        data-bs-toggle="modal" data-bs-target="#deleteConfirmationModal"
+                                        data-user-id="{{ $user->id }}">
+                                        ลบ
+                                    </button>
+
+                                    <!-- Delete Form with Unique ID -->
+                                    <form id="deleteForm-{{ $user->id }}"
+                                        action="{{ route('admin.delete.user', $user->id) }}" method="POST"
+                                        class="d-none">
+                                        @csrf
+                                        @method('DELETE')
+                                    </form>
                                 </div>
                             @endforeach
                         </div>
@@ -183,6 +197,43 @@
         </div>
 
         <script>
+            //delete users script
+            document.addEventListener('DOMContentLoaded', function() {
+                const confirmDeleteButton = document.getElementById('confirmDeleteButton');
+                let userId;
+
+                document.querySelectorAll('[data-bs-toggle="modal"]').forEach(function(button) {
+                    button.addEventListener('click', function() {
+                        userId = button.getAttribute('data-user-id');
+                    });
+                });
+
+                confirmDeleteButton.addEventListener('click', function() {
+                    const deleteReason = document.getElementById('deleteReason').value;
+                    if (deleteReason) {
+                        fetch(`/delete_user/${userId}`, {
+                                method: 'DELETE',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')
+                                        .getAttribute('content')
+                                },
+                                body: JSON.stringify({
+                                    reason: deleteReason
+                                })
+                            })
+                            .then(response => response.json())
+                            .then(data => {
+                                if (data.success) {
+                                    location.reload();
+                                }
+                            });
+                    } else {
+                        alert('กรุณาใส่เหตุผลก่อนลบ');
+                    }
+                });
+            });
+
             // Sort posts script
             function sortPosts() {
                 const sortBy = document.getElementById('sort-by').value.split('_');
@@ -211,10 +262,10 @@
                                         suggestionItem.classList.add('list-group-item',
                                             'list-group-item-action');
                                         suggestionItem.textContent =
-                                        `${user.id} - ${user.name}`; // Display ID and name
+                                            `${user.id} - ${user.name}`; // Display ID and name
                                         suggestionItem.addEventListener('click', function() {
                                             searchInput.value = user
-                                            .name; // Fill the input with the selected user's name
+                                                .name; // Fill the input with the selected user's name
                                             suggestionsBox.innerHTML = '';
                                         });
                                         suggestionsBox.appendChild(suggestionItem);
@@ -239,4 +290,25 @@
                 });
             });
         </script>
+
+        <!-- Delete Confirmation Modal -->
+        <div class="modal fade" id="deleteConfirmationModal" tabindex="-1"
+            aria-labelledby="deleteConfirmationModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="deleteConfirmationModalLabel">Delete Confirmation</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        คุณต้องการลบผู้ใช้นี้จริงหรือไม่?
+                        <textarea id="deleteReason" class="form-control mt-3" placeholder="ระบุเหตุผลการลบ" rows="3"></textarea>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">No</button>
+                        <button type="button" class="btn btn-danger" id="confirmDeleteButton">Yes</button>
+                    </div>
+                </div>
+            </div>
+        </div>
     @endsection

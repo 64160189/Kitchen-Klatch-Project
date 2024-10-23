@@ -10,6 +10,8 @@
 
     <title>Kitchen klatch</title>
 
+    {{-- link to css --}}
+    <link rel="stylesheet" href="{{ asset('css/app.css') }}">
     <!-- Fonts -->
     <link rel="dns-prefetch" href="//fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=Nunito" rel="stylesheet">
@@ -18,134 +20,39 @@
     @vite(['resources/sass/app.scss', 'resources/js/app.js'])
 
     <style>
-        .nav-link {
-            position: relative;
-            transition: color 0.3s ease;
-            /* เพิ่มแอนิเมชันในการเปลี่ยนสี */
-        }
-
-        .nav-link:hover {
-            color: #dc3545;
-            /* สีเมื่อ hover */
-        }
-
-        #notification-count {
-            font-size: 0.55rem;
-            /* ขนาดของตัวเลข */
-            background-color: #dc3545;
-            /* สีพื้นหลังของตัวเลขแจ้งเตือน */
-            color: white;
-            /* สีตัวเลข */
-            border-radius: 50%;
-            /* ทำให้เป็นวงกลม */
-            position: absolute;
-            /* ใช้ตำแหน่งแบบ absolute */
-            top: -1px;
-            /* เลื่อนขึ้น */
-            left: -1px;
-            /* เลื่อนขวา */
-        }
-
-        .dropdown-menu {
-            background-color: #ffffff;
-            /* สีพื้นหลังเมนู dropdown */
-            border: 1px solid #dee2e6;
-            /* ขอบของ dropdown */
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            /* เงา */
-        }
-
-        .dropdown-item {
-            transition: background-color 0.2s ease;
-            /* แอนิเมชันสำหรับ background */
-        }
-
-        .dropdown-item:hover {
-            background-color: #f8f9fa;
-            /* สีเมื่อ hover บนรายการ */
-        }
-
-        .list-group-item-unread {
-            background-color: #c9c9ca;
-            /* สีสำหรับแจ้งเตือนที่ยังไม่อ่าน */
-            color: #212529;
-            /* สีข้อความ */
-        }
-
-        .list-group-item-read {
-            background-color: #e2e3e5;
-            /* สีสำหรับแจ้งเตือนที่อ่านแล้ว */
-            color: #212529;
-            /* สีข้อความ */
-            border-left: 4px solid #28a745;
-            /* เส้นข้างซ้ายเพื่อแยก */
-        }
-
-        .main-content {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-
-        .content-area {
-            width: 75%;
-            min-width: 300px;
-        }
-
-        .post-frame:hover {
-            cursor: pointer;
-        }
-
-        .left-sidebar {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-
         .fridge {
             width: 20%;
             padding: 10px;
             border-radius: 10px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
             position: fixed;
-            top: 20%;
+            top: 13%;
             z-index: 1000;
         }
 
-        .ingredient-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background-color: #ffcccc;
-            padding: 5px 10px;
-            border-radius: 5px;
-            margin-bottom: 5px;
-        }
-
-        .ingredient-item button {
-            background: none;
-            border: none;
-            color: #ff0000;
-            font-size: 1.2rem;
+        .navbar {
+            position: sticky;
+            top: 0;
+            z-index: 1030;
+            /* Ensure it's on top of other elements */
         }
     </style>
-
 </head>
 
 <body>
     <div id="app">
         <nav class="navbar navbar-expand-md navbar-light bg-white shadow-sm sticky-top">
             <div class="container-fluid">
+                <a class="btn btn-outline-danger me-2" data-bs-toggle="offcanvas" href="#offcanvasExample"
+                    role="button" aria-controls="offcanvasExample">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                        class="bi bi-three-dots-vertical" viewBox="0 0 16 16">
+                        <path
+                            d="M9.5 13a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0m0-5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0m0-5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0" />
+                    </svg>
+                </a>
                 <a class="navbar-brand text-danger fw-bold fs-4" href="{{ url('/') }}">
                     {{ config('app.name', 'KitchenKlatch') }}
-
-                    <button class="btn btn-outline-danger ms-1">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor"
-                            class="bi bi-house-door-fill" viewBox="0 1 16 16">
-                            <path
-                                d="M6.5 14.5v-3.505c0-.245.25-.495.5-.495h2c.25 0 .5.25.5.5v3.5a.5.5 0 0 0 .5.5h4a.5.5 0 0 0 .5-.5v-7a.5.5 0 0 0-.146-.354L13 5.793V2.5a.5.5 0 0 0-.5-.5h-1a.5.5 0 0 0-.5.5v1.293L8.354 1.146a.5.5 0 0 0-.708 0l-6 6A.5.5 0 0 0 1.5 7.5v7a.5.5 0 0 0 .5.5h4a.5.5 0 0 0 .5-.5" />
-                        </svg>
-                    </button>
                 </a>
 
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
@@ -189,12 +96,26 @@
                                 </li>
                             @endif
                         @else
+                            {{-- create post --}}
+                            <a href="/create_post" class="nav-item btn btn-outline-secondary p-2" title="โพสต์สูตรอาหาร"
+                                data-bs-toggle="tooltip">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor"
+                                    class="bi bi-plus-circle" viewBox="0 0 16 16">
+                                    <path
+                                        d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4" />
+                                </svg>
+                            </a>
+
                             <!-- Notification Dropdown -->
                             <li class="nav-item dropdown">
                                 <a class="nav-link dropdown-toggle" href="#" id="notificationsDropdown" role="button"
                                     data-bs-toggle="dropdown" aria-expanded="false">
                                     <!-- Material Icons Bell Icon -->
-                                    <span class="material-icons">notifications_none</span>
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                                        fill="currentColor" class="bi bi-bell" viewBox="0 0 16 16">
+                                        <path
+                                            d="M8 16a2 2 0 0 0 2-2H6a2 2 0 0 0 2 2M8 1.918l-.797.161A4 4 0 0 0 4 6c0 .628-.134 2.197-.459 3.742-.16.767-.376 1.566-.663 2.258h10.244c-.287-.692-.502-1.49-.663-2.258C12.134 8.197 12 6.628 12 6a4 4 0 0 0-3.203-3.92zM14.22 12c.223.447.481.801.78 1H1c.299-.199.557-.553.78-1C2.68 10.2 3 6.88 3 6c0-2.42 1.72-4.44 4.005-4.901a1 1 0 1 1 1.99 0A5 5 0 0 1 13 6c0 .88.32 4.2 1.22 6" />
+                                    </svg>
                                     <!-- Badge for unread notifications -->
                                     @if (auth()->user()->notifications()->where('is_read', false)->count())
                                         <span class="badge bg-danger" id="notification-count">
@@ -216,10 +137,12 @@
                                         @endforeach
                                     @else
                                         <li>
-                                            <a class="dropdown-item" href="#">ไม่มีการแจ้งเตือน</a>
+                                            <a class="dropdown-item" href="#">No notifications</a>
                                         </li>
                                     @endif
                                 </ul>
+
+
                             </li>
 
                             {{-- profile dropdown --}}
@@ -240,16 +163,14 @@
                                     <a class="dropdown-item" href="{{ route('profile') }}">
                                         {{ __('โปรไฟล์') }}
                                     </a>
-                                    <a class="dropdown-item" href="/create_post">
-                                        {{ __('แบ่งปันสูตรอาหาร') }}
-                                    </a>
                                     <a class="dropdown-item bg-danger-subtle" href="{{ route('logout') }}"
                                         onclick="event.preventDefault();
                                                          document.getElementById('logout-form').submit();">
                                         {{ __('ออกจากระบบ') }}
                                     </a>
 
-                                    <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
+                                    <form id="logout-form" action="{{ route('logout') }}" method="POST"
+                                        class="d-none">
                                         @csrf
                                     </form>
                                 </div>
@@ -260,45 +181,233 @@
             </div>
         </nav>
 
-        <script>
-            // notification script
-            document.addEventListener('DOMContentLoaded', function () {
-                const notificationCountElement = document.getElementById('notification-count');
-                // ตรวจสอบว่าจำนวนแจ้งเตือนมีค่ามากกว่า 0
-                if (notificationCountElement) {
-                    const initialCount = parseInt(notificationCountElement.innerText);
-                    const notificationLinks = document.querySelectorAll('.dropdown-item');
-                    notificationLinks.forEach(link => {
-                        link.addEventListener('click', function () {
-                            // ลดจำนวนแจ้งเตือนเมื่อคลิก
-                            notificationCountElement.innerText = initialCount - 1;
-                            initialCount--; // ลดค่าของจำนวนแจ้งเตือน
+        {{-- side bar --}}
+        <div class="offcanvas offcanvas-start" tabindex="-1" id="offcanvasExample"
+            aria-labelledby="offcanvasExampleLabel">
+            <div class="offcanvas-header">
+                <h5 class="offcanvas-title fs-3 fw-bold text-danger" id="offcanvasExampleLabel">KitchenKlatch</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+            </div>
+            <div class="offcanvas-body">
+                <ul class="navbar-nav justify-content-end flex-grow-1 pe-3">
+                    <li class="nav-item">
+                        <a class="nav-link active fw-bold" aria-current="page">หน้าหลัก</a>
+                    </li>
+                    <li class="nav-item">
+                        @guest
+                        @else
+                            @if (Auth::user()->is_admin)
+                                <a class="nav-link btn bg-secondary-subtle mb-1" href="{{ route('admin.home') }}">
+                                    {{ __('แดชบอร์ดแอดมิน') }}
+                                </a>
+                            @endif
+                        @endguest
+                        <a class="nav-link btn bg-secondary-subtle mb-1" href="/">โพสต์ทั้งหมด</a>
+                        <a class="nav-link btn bg-secondary-subtle" href="/">การติดตาม</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active fw-bold mt-4" aria-current="page">เกี่ยวกับคุณ</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link btn bg-secondary-subtle mb-1" href="{{ route('profile') }}">โปรไฟล์</a>
+                        <a class="nav-link btn bg-secondary-subtle mb-1" href="/create_post">โพสต์สูตรอาหาร</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // predict search script
+        document.addEventListener('DOMContentLoaded', function() {
+            const searchInput = document.getElementById('search-input');
+            const suggestionsBox = document.getElementById('title-suggestions');
+
+            searchInput.addEventListener('input', function() {
+                const query = searchInput.value.trim();
+
+                if (query.length > 0) {
+                    fetch(`/title/predictions?search=${query}`)
+                        .then(response => response.json())
+                        .then(data => {
+                            suggestionsBox.innerHTML = '';
+                            if (data.length > 0) {
+                                data.forEach(post => {
+                                    const suggestionItem = document.createElement('li');
+                                    suggestionItem.classList.add('list-group-item',
+                                        'list-group-item-action');
+                                    suggestionItem.textContent = post.title;
+                                    suggestionItem.addEventListener('click', function() {
+                                        searchInput.value = post.title;
+                                        suggestionsBox.innerHTML = '';
+                                    });
+                                    suggestionsBox.appendChild(suggestionItem);
+                                });
+                            } else {
+                                const noResultsItem = document.createElement('li');
+                                noResultsItem.classList.add('list-group-item');
+                                noResultsItem.textContent = 'No results found';
+                                suggestionsBox.appendChild(noResultsItem);
+                            }
                         });
+                } else {
+                    suggestionsBox.innerHTML = '';
+                }
+            });
+
+            document.addEventListener('click', function(event) {
+                if (!suggestionsBox.contains(event.target) && event.target !== searchInput) {
+                    suggestionsBox.innerHTML = '';
+                }
+            });
+        });
+
+        // ask for ingredients bar
+        @if (View::hasSection('show_ingredients_bar'))
+            // ingredients search script
+            document.addEventListener('DOMContentLoaded', function() {
+                const ingredientInput = document.getElementById('ingredient-input');
+                const addIngredientButton = document.getElementById('add-ingredient');
+                const ingredientList = document.getElementById('ingredient-list');
+                const searchRecipesButton = document.getElementById('search-recipes');
+                const randomRecipeButton = document.getElementById('random-recipe');
+                const loadingAnimation = document.getElementById('loading-animation');
+                let ingredients = @json($ingredients); // Load the ingredients from PHP
+
+                if (ingredients && ingredients.length > 0) {
+                    updateIngredientList();
+                }
+
+                addIngredientButton.addEventListener('click', function() {
+                    const ingredient = ingredientInput.value.trim();
+                    if (ingredient && !ingredients.includes(ingredient)) {
+                        ingredients.push(ingredient);
+                        updateIngredientList();
+                    }
+                    ingredientInput.value = '';
+                });
+
+                ingredientList.addEventListener('click', function(e) {
+                    if (e.target.tagName === 'BUTTON') {
+                        const ingredient = e.target.getAttribute('data-ingredient');
+                        ingredients = ingredients.filter(i => i !== ingredient);
+                        updateIngredientList();
+                    }
+                });
+
+                searchRecipesButton.addEventListener('click', function() {
+                    fetch('/store-ingredients', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')
+                                .getAttribute('content')
+                        },
+                        body: JSON.stringify({
+                            ingredients: ingredients
+                        })
+                    }).then(() => {
+                        window.location.href =
+                            `/ingredients/search?ingredients=${ingredients.join(',')}`;
+                    });
+                });
+
+                //random recipe
+                randomRecipeButton.addEventListener('click', function() {
+                    // Set the background color
+                    document.getElementById('loading-animation').style.setProperty('--loading-bg-color',
+                        '#ffa806');
+                    // Set the loading text
+                    document.querySelector('.loading-text').textContent = 'Calculating...';
+                    // Show the loading animation
+                    loadingAnimation.style.display = 'block';
+
+                    fetch('/random-recipe', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')
+                                    .getAttribute('content')
+                            },
+                            body: JSON.stringify({
+                                ingredients: ingredients
+                            })
+                        }).then(response => response.json())
+                        .then(data => {
+                            if (data.postId) {
+                                // Wait for 1.5 seconds before redirecting
+                                setTimeout(() => {
+                                    // Hide the loading animation just before redirecting
+                                    loadingAnimation.style.display = 'none';
+                                    // Redirect after the delay
+                                    window.location.href = `/post/${data.postId}`;
+                                }, 1500);
+                            } else {
+                                // Hide the loading animation if there's an error
+                                loadingAnimation.style.display = 'none';
+                                alert('No matching recipes found.');
+                            }
+                        }).catch(error => {
+                            // Hide the loading animation if there's an error
+                            loadingAnimation.style.display = 'none';
+                            console.error('Error:', error);
+                        });
+                });
+
+
+                function updateIngredientList() {
+                    ingredientList.innerHTML = '';
+                    ingredients.forEach(ingredient => {
+                        const li = document.createElement('li');
+                        li.classList.add('ingredient-item');
+                        li.innerHTML =
+                            `${ingredient} <button data-ingredient="${ingredient}">&times;</button>`;
+                        ingredientList.appendChild(li);
                     });
                 }
             });
-            
-            // predict search script
+
+            // Load ingredient list from PHP variable
             document.addEventListener('DOMContentLoaded', function() {
-                const searchInput = document.getElementById('search-input');
-                const suggestionsBox = document.getElementById('title-suggestions');
+                const ingredients = @json($ingredients);
+                if (ingredients && ingredients.length > 0) {
+                    updateIngredientList(ingredients);
+                }
+
+                function updateIngredientList(ingredients) {
+                    const ingredientList = document.getElementById('ingredient-list');
+                    ingredientList.innerHTML = '';
+                    ingredients.forEach(ingredient => {
+                        const li = document.createElement('li');
+                        li.classList.add('ingredient-item');
+                        li.innerHTML =
+                            `${ingredient} <button data-ingredient="${ingredient}">&times;</button>`;
+                        ingredientList.appendChild(li);
+                    });
+                }
+            });
+
+            // ingredients predict search script
+            document.addEventListener('DOMContentLoaded', function() {
+                const searchInput = document.getElementById('ingredient-input');
+                const suggestionsBox = document.getElementById('ingredients-suggestions');
 
                 searchInput.addEventListener('input', function() {
                     const query = searchInput.value.trim();
 
                     if (query.length > 0) {
-                        fetch(`/title/predictions?search=${query}`)
+                        fetch(`/ingredients/predictions?search=${query}`)
                             .then(response => response.json())
                             .then(data => {
                                 suggestionsBox.innerHTML = '';
                                 if (data.length > 0) {
-                                    data.forEach(post => {
+                                    data.forEach(ingredient => {
                                         const suggestionItem = document.createElement('li');
                                         suggestionItem.classList.add('list-group-item',
                                             'list-group-item-action');
-                                        suggestionItem.textContent = post.title;
+                                        suggestionItem.textContent = ingredient;
                                         suggestionItem.addEventListener('click', function() {
-                                            searchInput.value = post.title;
+                                            searchInput.value = ingredient;
                                             suggestionsBox.innerHTML = '';
                                         });
                                         suggestionsBox.appendChild(suggestionItem);
@@ -321,136 +430,72 @@
                     }
                 });
             });
+        @endif
 
-            // ask for ingredients bar
-            @if (View::hasSection('show_ingredients_bar'))
-                // ingredients search script
-                document.addEventListener('DOMContentLoaded', function() {
-                    const ingredientInput = document.getElementById('ingredient-input');
-                    const addIngredientButton = document.getElementById('add-ingredient');
-                    const ingredientList = document.getElementById('ingredient-list');
-                    const searchRecipesButton = document.getElementById('search-recipes');
-                    let ingredients = @json($ingredients); // Load the ingredients from PHP
+        //hover create post
+        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+        var tooltipList = tooltipTriggerList.map(function(tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl)
+        })
 
-                    if (ingredients && ingredients.length > 0) {
-                        updateIngredientList();
-                    }
-
-                    addIngredientButton.addEventListener('click', function() {
-                        const ingredient = ingredientInput.value.trim();
-                        if (ingredient && !ingredients.includes(ingredient)) {
-                            ingredients.push(ingredient);
-                            updateIngredientList();
-                        }
-                        ingredientInput.value = '';
-                    });
-
-                    ingredientList.addEventListener('click', function(e) {
-                        if (e.target.tagName === 'BUTTON') {
-                            const ingredient = e.target.getAttribute('data-ingredient');
-                            ingredients = ingredients.filter(i => i !== ingredient);
-                            updateIngredientList();
-                        }
-                    });
-
-                    searchRecipesButton.addEventListener('click', function() {
-                        fetch('/store-ingredients', {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json',
-                                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')
-                                    .getAttribute('content')
-                            },
-                            body: JSON.stringify({
-                                ingredients: ingredients
-                            })
-                        }).then(() => {
-                            window.location.href =
-                                `/ingredients/search?ingredients=${ingredients.join(',')}`;
-                        });
-                    });
-
-                    function updateIngredientList() {
-                        ingredientList.innerHTML = '';
-                        ingredients.forEach(ingredient => {
-                            const li = document.createElement('li');
-                            li.classList.add('ingredient-item');
-                            li.innerHTML =
-                                `${ingredient} <button data-ingredient="${ingredient}">&times;</button>`;
-                            ingredientList.appendChild(li);
-                        });
-                    }
-                });
-
-                // Load ingredient list from PHP variable
-                document.addEventListener('DOMContentLoaded', function() {
-                    const ingredients = @json($ingredients);
-                    if (ingredients && ingredients.length > 0) {
-                        updateIngredientList(ingredients);
-                    }
-
-                    function updateIngredientList(ingredients) {
-                        const ingredientList = document.getElementById('ingredient-list');
-                        ingredientList.innerHTML = '';
-                        ingredients.forEach(ingredient => {
-                            const li = document.createElement('li');
-                            li.classList.add('ingredient-item');
-                            li.innerHTML =
-                                `${ingredient} <button data-ingredient="${ingredient}">&times;</button>`;
-                            ingredientList.appendChild(li);
-                        });
-                    }
-                });
-
-                // ingredients predict search script
-                document.addEventListener('DOMContentLoaded', function() {
-                    const searchInput = document.getElementById('ingredient-input');
-                    const suggestionsBox = document.getElementById('ingredients-suggestions');
-
-                    searchInput.addEventListener('input', function() {
-                        const query = searchInput.value.trim();
-
-                        if (query.length > 0) {
-                            fetch(`/ingredients/predictions?search=${query}`)
-                                .then(response => response.json())
-                                .then(data => {
-                                    suggestionsBox.innerHTML = '';
-                                    if (data.length > 0) {
-                                        data.forEach(ingredient => {
-                                            const suggestionItem = document.createElement('li');
-                                            suggestionItem.classList.add('list-group-item',
-                                                'list-group-item-action');
-                                            suggestionItem.textContent = ingredient;
-                                            suggestionItem.addEventListener('click', function() {
-                                                searchInput.value = ingredient;
-                                                suggestionsBox.innerHTML = '';
-                                            });
-                                            suggestionsBox.appendChild(suggestionItem);
-                                        });
-                                    } else {
-                                        const noResultsItem = document.createElement('li');
-                                        noResultsItem.classList.add('list-group-item');
-                                        noResultsItem.textContent = 'No results found';
-                                        suggestionsBox.appendChild(noResultsItem);
-                                    }
-                                });
-                        } else {
-                            suggestionsBox.innerHTML = '';
-                        }
-                    });
-
-                    document.addEventListener('click', function(event) {
-                        if (!suggestionsBox.contains(event.target) && event.target !== searchInput) {
-                            suggestionsBox.innerHTML = '';
-                        }
+        // notification script
+        document.addEventListener('DOMContentLoaded', function() {
+            const notificationCountElement = document.getElementById('notification-count');
+            // ตรวจสอบว่าจำนวนแจ้งเตือนมีค่ามากกว่า 0
+            if (notificationCountElement) {
+                const initialCount = parseInt(notificationCountElement.innerText);
+                const notificationLinks = document.querySelectorAll('.dropdown-item');
+                notificationLinks.forEach(link => {
+                    link.addEventListener('click', function() {
+                        // ลดจำนวนแจ้งเตือนเมื่อคลิก
+                        notificationCountElement.innerText = initialCount - 1;
+                        initialCount--; // ลดค่าของจำนวนแจ้งเตือน
                     });
                 });
-            @endif
-        </script>
+            }
+        });
+        //delete notification modal
+        document.addEventListener('DOMContentLoaded', function() {
+            const notificationLinks = document.querySelectorAll('.dropdown-item');
+            notificationLinks.forEach(link => {
+                link.addEventListener('click', function(event) {
+                    event.preventDefault();
 
-        <main class="py-4">
-            @yield('content')
-        </main>
+                    const message = this.textContent.trim(); // Get the full message
+
+                    // Update the modal content
+                    document.getElementById('adminMessage').textContent = message;
+
+                    // Show the modal
+                    new bootstrap.Modal(document.getElementById('notificationModal')).show();
+                });
+            });
+        });
+    </script>
+
+    <main class="py-4">
+        @yield('content')
+    </main>
+
+    <!-- Post Deletion Details Modal -->
+    <div class="modal fade" id="notificationModal" tabindex="-1" aria-labelledby="notificationModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="notificationModalLabel">Post Deletion Details</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>โพสต์ของคุณถูกลบเนื่องจาก: <span id="adminMessage"></span></p>
+                    <p>โพสต์ที่ถูกลบ: <span id="deletedPostTitle"></span></p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
     </div>
 </body>
 

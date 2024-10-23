@@ -38,6 +38,23 @@
 3.ปรุงรส"
                     required></textarea>
             </div>
+
+            <div class="mb-3">
+                <label for="time_to_cook" class="form-label">เวลาที่ใช้ในการทำ (นาที)</label>
+                <input type="number" class="form-control" id="time_to_cook" name="time_to_cook" placeholder="นาที" min="1" required>
+            </div>
+        
+            <div class="mb-3">
+                <label for="level_of_cook" class="form-label">ระดับความยากของการทำ</label>
+                <select class="form-select" id="level_of_cook" name="level_of_cook" required>
+                    <option value="1">ง่ายมาก</option>
+                    <option value="2">ค่อนข้างง่าย</option>
+                    <option value="3">ปานกลาง</option>
+                    <option value="4">ค่อนข้างยาก</option>
+                    <option value="5">ยาก</option>
+                </select>
+            </div>
+
             <div class="mb-3">
                 <label for="youtube_link" class="form-label">ลิงค์วิดีโอ YouTube "ถ้ามี"</label>
                 <input type="text" class="form-control" id="youtube_link" name="youtube_link"

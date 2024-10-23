@@ -42,6 +42,23 @@
 3.ปรุงรส"
                     required>{{ is_array($post->htc) ? implode("\n", $post->htc) : $post->htc }}</textarea>
             </div>
+
+            <div class="mb-3">
+                <label for="time_to_cook" class="form-label">เวลาที่ใช้ในการทำ (นาที)</label>
+                <input type="number" class="form-control" id="time_to_cook" name="time_to_cook" value="{{ $post->time_to_cook }}" min="1" required>
+            </div>
+        
+            <div class="mb-3">
+                <label for="level_of_cook" class="form-label">ระดับความยากของการทำ</label>
+                <select class="form-select" id="level_of_cook" name="level_of_cook" required>
+                    <option value="1" {{ $post->level_of_cook == 1 ? 'selected' : '' }}>ง่ายมาก</option>
+                    <option value="2" {{ $post->level_of_cook == 2 ? 'selected' : '' }}>ค่อนข้างง่าย</option>
+                    <option value="3" {{ $post->level_of_cook == 3 ? 'selected' : '' }}>ปานกลาง</option>
+                    <option value="4" {{ $post->level_of_cook == 4 ? 'selected' : '' }}>ค่อนข้างยาก</option>
+                    <option value="5" {{ $post->level_of_cook == 5 ? 'selected' : '' }}>ยาก</option>
+                </select>
+            </div>
+
             <div class="mb-3">
                 <label for="youtube_link" class="form-label">ลิงค์วิดีโอ YouTube "ถ้ามี"</label>
                 <input type="text" class="form-control" id="youtube_link" name="youtube_link"

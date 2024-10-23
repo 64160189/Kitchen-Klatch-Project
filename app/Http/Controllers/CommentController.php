@@ -11,21 +11,17 @@ class CommentController extends Controller
 {
     public function store(Request $request, $postId)
     {
+        $post = PostModel::find($postId);
         if (!auth()->check()) {
-            return response()->json([
-                'message' => 'คุณต้องเข้าสู่ระบบก่อนจึงจะสามารถโพสต์คอมเมนต์ได้.',
-            ], 403);
+            return redirect()->back()->with('error', 'คุณต้องเข้าสู่ระบบก่อนจึงจะสามารถคอมเมนต์ได้!');
         }
 
         $request->validate([
             'content' => 'required|string|max:255',
         ]);
 
-        $post = PostModel::find($postId);
         if (!$post) {
-            return response()->json([
-                'message' => 'โพสต์ไม่พบ.',
-            ], 404);
+            return redirect()->back()->with('error', 'ไม่พบโพสต์');
         }
 
         $comment = new Comment();
