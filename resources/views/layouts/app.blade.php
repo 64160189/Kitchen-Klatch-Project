@@ -29,13 +29,6 @@
             top: 13%;
             z-index: 1000;
         }
-
-        .navbar {
-            position: sticky;
-            top: 0;
-            z-index: 1030;
-            /* Ensure it's on top of other elements */
-        }
     </style>
 </head>
 
@@ -141,8 +134,6 @@
                                         </li>
                                     @endif
                                 </ul>
-
-
                             </li>
 
                             {{-- profile dropdown --}}
@@ -215,6 +206,10 @@
                 </ul>
             </div>
         </div>
+
+        <main class="py-4">
+            @yield('content')
+        </main>
     </div>
 
     <script>
@@ -472,10 +467,6 @@
             });
         });
     </script>
-
-    <main class="py-4">
-        @yield('content')
-    </main>
 
     <!-- Post Deletion Details Modal -->
     <div class="modal fade" id="notificationModal" tabindex="-1" aria-labelledby="notificationModalLabel"
