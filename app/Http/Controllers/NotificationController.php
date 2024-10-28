@@ -4,20 +4,51 @@ namespace App\Http\Controllers;
 
 use App\Models\Notification;
 use Illuminate\Http\Request;
+use Illuminate\Notifications\Notifiable;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class NotificationController extends Controller
 {
     public function read($id)
     {
-        $notification = Notification::find($id);
+        $notification = Notification::findOrFail($id);
+        $notification->update(['is_read' => true]);
 
-        if ($notification) {
-            $notification->is_read = true; // เปลี่ยนสถานะเป็นอ่าน
-            $notification->save(); // บันทึกการเปลี่ยนแปลง
-        }
-
-        return redirect()->route('post.show', $notification->post_id); // นำไปยังโพสต์
+        return response()->json(['status' => 'success']);
     }
+
+    public function markAsRead($id)
+    {
+        try {
+            $notification = Notification::findOrFail($id);
+
+            // Check if the notification belongs to the logged-in user
+            if ($notification->user_id !== auth()->id()) {
+                return redirect('/')->with('error', "You don't have permission to do that.");
+            }
+
+            if (!$notification->is_read) {
+                $notification->is_read = true;
+                $notification->save();
+            }
+
+            if ($notification->notifiable_type === 'comment') {
+                // Redirect to the post page for comment notifications
+                return redirect()->route('post.show', ['id' => $notification->post_id]);
+            } elseif ($notification->notifiable_type === 'delete') {
+                // For delete notifications, display the modal content
+                return view('notifications.delete-modal', [
+                    'postTitle' => $notification->post_title,
+                    'message' => $notification->message,
+                    'postImage' => $notification->post_image,
+                ]);
+            }
+        } catch (ModelNotFoundException $e) {
+            // If the notification does not exist, redirect to the homepage with an error message
+            return redirect('/')->with('error', "You don't have permission to do that.");
+        }
+    }
+
     public function index()
     {
         $notifications = Notification::where('user_id', auth()->id())
@@ -27,14 +58,13 @@ class NotificationController extends Controller
         return view('notifications.index', compact('notifications'));
     }
 
+    use Notifiable; // Ensure you import this correctly at the top
 
     public function showNotifications()
     {
-        // แสดงเฉพาะ 10 การแจ้งเตือนล่าสุดที่ยังไม่อ่าน
-        $notifications = auth()->user()->notifications()
-            ->where('is_read', false) // เฉพาะการแจ้งเตือนที่ยังไม่อ่าน
-            ->orderBy('created_at', 'desc')
-            ->take(10) // จำกัดการแสดงผลที่ 10 รายการ
+        // Get the latest 10 unread notifications
+        $notifications = auth()->user()->unreadNotifications // Laravel's built-in notifications relationship
+            ->take(10) // Limit to 10
             ->get();
 
         return view('partials.notifications', compact('notifications'));

@@ -37,6 +37,8 @@ class CommentController extends Controller
         $notification->post_id = $postId;
         $notification->message = "{$userName} ได้แสดงความคิดเห็นในโพสต์ของคุณ: " . $post->title; // เปลี่ยนข้อความที่แสดง
         $notification->is_read = false; // การแจ้งเตือนยังไม่ได้อ่าน
+        $notification->notifiable_type = "comment";
+        $notification->notifiable_id = 1;
         $notification->save();
 
         return redirect()->route('post.show', $post->id)->with('success', 'คอมเมนต์โพสต์สำเร็จ!');

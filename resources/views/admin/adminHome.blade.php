@@ -106,18 +106,18 @@
                         <div class="col-3 card p-0 border">
                             <div class="card-header" style="background: #F20505">
                                 <span class="fw-semibold">
-                                    <span>โพสต์ที่ถูกรายงานทั้งหมด</span></br>
-                                    <span class="fs-1 fw-bold" style="color: white">{{ $AllPosts }} </span> โพสต์
+                                    <span>มีการรายงานทั้งหมด</span></br>
+                                    <span class="fs-1 fw-bold" style="color: white">{{ $AllReports }} </span> ครั้ง
                                 </span>
                             </div>
                             <div class="card-body mt-1 fw-semibold" style="background: #F20505">
-                                วันนี้ <span class="fw-bold" style="color: white"> {{ $todayPosts }} </span> โพสต์
+                                วันนี้ <span class="fw-bold" style="color: white"> {{ $todayReports }} </span> ครั้ง
                             </div>
                             <div class="card-body mt-1 fw-semibold" style="background: #F63535">
-                                7 วัน <span class="fw-bold" style="color: white"> {{ $last7dayPosts }} </span> โพสต์
+                                7 วัน <span class="fw-bold" style="color: white"> {{ $last7dayReports }} </span> ครั้ง
                             </div>
                             <div class="card-footer mt-1 fw-semibold" style="background: #F46F6F">
-                                30 วัน <span class="fw-bold" style="color: white"> {{ $last30dayPosts }} </span> โพสต์
+                                30 วัน <span class="fw-bold" style="color: white"> {{ $last30dayReports }} </span> ครั้ง
                             </div>
                         </div>
                     </div>
@@ -229,8 +229,8 @@
         // REPORTED posts chart
         $(document).ready(function() {
             // Fetch and prepare the data from the controller
-            const labels = @json($Plabels);
-            const data = @json($Pdata);
+            const labels = @json($Rlabels);
+            const data = @json($Rdata);
 
             console.log("Labels:", labels);
             console.log("Data:", data);
@@ -243,7 +243,7 @@
                     data: {
                         labels: labels, // Dates on X-axis
                         datasets: [{
-                            label: 'จำนวนโพสต์ที่ถูกรายงานใน 7 วันที่ผ่านมา',
+                            label: 'การรายงานโพสต์ใน 7 วันที่ผ่านมา',
                             data: data, // Counts on Y-axis
                             backgroundColor: 'rgba(242, 5, 0, 0.5)',
                             borderColor: 'rgba(242, 5, 0, 1)',

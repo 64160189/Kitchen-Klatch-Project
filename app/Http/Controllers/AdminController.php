@@ -38,6 +38,7 @@ class AdminController extends Controller
 
         $AllPosts = DB::table('post_models')->count();
         $AllUsers = DB::table('users')->count();
+        $AllReports = DB::table('reports')->count();
 
         //user count
         $todayUsers = DB::table('users')->whereDate('created_at', '=', Carbon::today())->count();
@@ -49,13 +50,21 @@ class AdminController extends Controller
         $last7dayPosts = DB::table('post_models')->whereDate('created_at', '>=', Carbon::today()->subday(7))->count();
         $last30dayPosts = DB::table('post_models')->whereDate('created_at', '>=', Carbon::today()->subday(30))->count();
 
+        //report count
+        $todayReports = DB::table('reports')->whereDate('created_at', '=', Carbon::today())->count();
+        $last7dayReports= DB::table('reports')->whereDate('created_at', '>=', Carbon::today()->subdays(7))->count();
+        $last30dayReports = DB::table('reports')->whereDate('created_at', '>=', Carbon::today()->subday(30))->count();
+
+
         // Initialize data for the last 7 days
         $usersByDay = collect([]);
         $postsByDay = collect([]);
+        $reportsByDay = collect([]);
         for ($i = 0; $i < 7; $i++) {
             $date = Carbon::today()->subDays($i)->format('Y-m-d');
             $usersByDay[$date] = 0; // Set initial count to 0
             $postsByDay[$date] = 0;
+            $reportsByDay[$date] = 0;
         }
 
         //USERS
@@ -90,6 +99,22 @@ class AdminController extends Controller
         $Plabels = $postsByDay->keys();
         $Pdata = $postsByDay->values();
 
+         //REPORTS
+        // Fetch reports created in the last 7 days, grouped by date
+        $reportsData = DB::table('reports')
+            ->select(DB::raw('DATE_FORMAT(created_at, "%Y-%m-%d") as date'), DB::raw('count(*) as count'))
+            ->whereBetween('created_at', [Carbon::today()->subDays(7), Carbon::now()])
+            ->groupBy(DB::raw('DATE_FORMAT(created_at, "%Y-%m-%d")'))
+            ->orderBy('date', 'asc')
+            ->get();
+        // Merge fetched data into the initialized usersByDay array
+        foreach ($reportsData as $data) {
+            $reportsByDay[$data->date] = $data->count;
+        }
+        // Convert to a format suitable for Chart.js
+        $Rlabels = $reportsByDay->keys();
+        $Rdata = $reportsByDay->values();
+
 
         //dd($Plabels, $Pdata);
 
@@ -105,7 +130,13 @@ class AdminController extends Controller
             'Ulabels',
             'Udata',
             'Plabels',
-            'Pdata'
+            'Pdata',
+            'AllReports',
+            'todayReports',
+            'last7dayReports',
+            'last30dayReports',
+            'Rlabels',
+            'Rdata'
         ));
     }
 

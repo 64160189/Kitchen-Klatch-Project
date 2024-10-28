@@ -26,13 +26,12 @@ Route::post('password/reset', [ResetPasswordController::class, 'reset'])->name('
 
 // CommentNotification
 Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
-Route::post('/notifications/{id}/read', [NotificationController::class, 'markAsRead'])->name('notifications.read');
 Route::middleware(['auth'])->group(function () {
     Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications');
 });
-Route::get('notifications/{id}/read', [NotificationController::class, 'read'])->name('notifications.read');
 Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
-Route::get('/notifications/read/{id}', [NotificationController::class, 'read'])->name('notifications.read');
+Route::get('/notifications/read/{id}', [NotificationController::class, 'markAsRead'])->name('notifications.read');
+
 
 //home Route
 Route::get('/', [postcontroller::class, 'showPost'])->name('home');
@@ -96,6 +95,10 @@ Route::middleware(['auth'])->group(function () {
 // post routes
 Route::get('/posts', [postcontroller::class, 'fetchPosts']);
 Route::get('/post/{id}', [postcontroller::class, 'showFullPost'])->name('post.show');
+Route::middleware(['auth'])->group(function () {
+    Route::get('/following', [postController::class, 'followingPosts'])->name('following.posts');
+    Route::get('/following/posts', [postcontroller::class, 'fentchFollowingPosts']);
+});
 
 // Rout Post Report
 Route::post('/post/{id}/report', [PostController::class, 'report'])->name('post.report');

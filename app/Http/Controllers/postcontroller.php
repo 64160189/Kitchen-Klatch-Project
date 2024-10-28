@@ -59,6 +59,41 @@ class postcontroller extends Controller
         return response()->json($posts);
     }
 
+    public function followingPosts()
+    {
+        // Get the authenticated user
+        $user = Auth::user();
+
+        // Fetch posts by users that the current user is following
+        $posts = PostModel::with('user')->whereIn('user_id', $user->followings()->pluck('id'))->orderBy('id', 'desc')->paginate(5);
+
+        // Decode the JSON fields for each post
+        foreach ($posts as $post) {
+            $post->ingrediant = json_decode($post->ingrediant, true);
+            $post->htc = json_decode($post->htc, true);
+        }
+
+        return view('followingPost', compact('posts'));
+    }
+
+    public function fentchFollowingPosts()
+    {
+        // Get the authenticated user
+        $user = Auth::user();
+
+        // Fetch posts by users that the current user is following
+        $posts = PostModel::with('user')->whereIn('user_id', $user->followings()->pluck('id'))->orderBy('id', 'desc')->paginate(5);
+
+        // Decode the JSON fields for each post
+        foreach ($posts as $post) {
+            $post->ingrediant = json_decode($post->ingrediant, true);
+            $post->htc = json_decode($post->htc, true);
+        }
+
+        // Return the posts as JSON
+        return response()->json($posts);
+    }
+
     public function storePost(Request $request)
     {
         $request->validate([
@@ -115,7 +150,12 @@ class postcontroller extends Controller
             return redirect('/')->with('error', "You don't have permission to do that.");
         }
 
-        if (!(Auth::user()->is_admin)) {
+        if (Auth::user()->id == $post->user_id) {
+            // Delete related comment notifications
+            Notification::where('post_id', $id)
+                ->where('notifiable_type', 'comment')
+                ->delete();
+
             // Delete the post
             $post->delete();
             return redirect('/')->with('success', "Post deleted successfully.");
@@ -130,9 +170,15 @@ class postcontroller extends Controller
                 'post_id' => $post->id, // Save post ID for reference (even if deleted)
                 'post_title' => $postTitle, // Save the post title before deletion
                 'post_image' => $postImage, // Save the post image before deletion
-                'message' => "Your post was deleted by an admin. Reason: {$reason}",
+                'message' => "โพสต์ของคุณถูกลบโดยผู้ดูแลระบบ. เหตุผล: {$reason}",
+                'notifiable_type' => "delete",
+                'notifiable_id' => 2,
                 'is_read' => false,
             ]);
+            // Delete related comment notifications
+            Notification::where('post_id', $id)
+                ->where('notifiable_type', 'comment')
+                ->delete();
 
             // Delete the post
             $post->delete();

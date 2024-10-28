@@ -121,11 +121,14 @@
                                         @foreach (auth()->user()->notifications as $notification)
                                             <li>
                                                 <a class="dropdown-item {{ $notification->is_read ? 'list-group-item-read' : 'list-group-item-unread' }}"
-                                                    href="{{ route('notifications.read', $notification->id) }}">
-                                                    {{ $notification->message }}
-                                                    <span
-                                                        class="text-muted">({{ $notification->created_at->diffForHumans() }})</span>
-                                                </a>
+                                                    href="{{ route('notifications.read', $notification->id) }}"
+                                                    data-notifiable-type="{{ $notification->notifiable_type }}"
+                                                    data-post-title="{{ $notification->post_title }}"
+                                                    data-post-reason="{{ $notification->message }}">
+                                                    {{ Str::limit($notification->message, 45) }}
+                                                    <span class="text-muted">({{ $notification->created_at->diffForHumans() }})</span>
+                                                 </a>
+                                                 
                                             </li>
                                         @endforeach
                                     @else
@@ -194,7 +197,7 @@
                             @endif
                         @endguest
                         <a class="nav-link btn bg-secondary-subtle mb-1" href="/">โพสต์ทั้งหมด</a>
-                        <a class="nav-link btn bg-secondary-subtle" href="/">การติดตาม</a>
+                        <a class="nav-link btn bg-secondary-subtle" href="{{ route('following.posts') }}">การติดตาม</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link active fw-bold mt-4" aria-current="page">เกี่ยวกับคุณ</a>
@@ -432,62 +435,7 @@
         var tooltipList = tooltipTriggerList.map(function(tooltipTriggerEl) {
             return new bootstrap.Tooltip(tooltipTriggerEl)
         })
-
-        // notification script
-        document.addEventListener('DOMContentLoaded', function() {
-            const notificationCountElement = document.getElementById('notification-count');
-            // ตรวจสอบว่าจำนวนแจ้งเตือนมีค่ามากกว่า 0
-            if (notificationCountElement) {
-                const initialCount = parseInt(notificationCountElement.innerText);
-                const notificationLinks = document.querySelectorAll('.dropdown-item');
-                notificationLinks.forEach(link => {
-                    link.addEventListener('click', function() {
-                        // ลดจำนวนแจ้งเตือนเมื่อคลิก
-                        notificationCountElement.innerText = initialCount - 1;
-                        initialCount--; // ลดค่าของจำนวนแจ้งเตือน
-                    });
-                });
-            }
-        });
-        //delete notification modal
-        document.addEventListener('DOMContentLoaded', function() {
-            const notificationLinks = document.querySelectorAll('.dropdown-item');
-            notificationLinks.forEach(link => {
-                link.addEventListener('click', function(event) {
-                    event.preventDefault();
-
-                    const message = this.textContent.trim(); // Get the full message
-
-                    // Update the modal content
-                    document.getElementById('adminMessage').textContent = message;
-
-                    // Show the modal
-                    new bootstrap.Modal(document.getElementById('notificationModal')).show();
-                });
-            });
-        });
     </script>
-
-    <!-- Post Deletion Details Modal -->
-    <div class="modal fade" id="notificationModal" tabindex="-1" aria-labelledby="notificationModalLabel"
-        aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="notificationModalLabel">Post Deletion Details</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <p>โพสต์ของคุณถูกลบเนื่องจาก: <span id="adminMessage"></span></p>
-                    <p>โพสต์ที่ถูกลบ: <span id="deletedPostTitle"></span></p>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                </div>
-            </div>
-        </div>
-    </div>
-    </div>
 </body>
 
 </html>

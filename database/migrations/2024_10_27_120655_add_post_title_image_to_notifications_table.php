@@ -6,19 +6,24 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    public function up()
+    /**
+     * Run the migrations.
+     */
+    public function up(): void
     {
         Schema::table('notifications', function (Blueprint $table) {
             $table->string('post_title')->nullable();
             $table->string('post_image')->nullable();
         });
     }
-    
-    public function down()
+
+    /**
+     * Reverse the migrations.
+     */
+    public function down(): void
     {
         Schema::table('notifications', function (Blueprint $table) {
             $table->dropColumn(['post_title', 'post_image']);
         });
     }
-    
 };
