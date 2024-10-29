@@ -9,14 +9,6 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class NotificationController extends Controller
 {
-    public function read($id)
-    {
-        $notification = Notification::findOrFail($id);
-        $notification->update(['is_read' => true]);
-
-        return response()->json(['status' => 'success']);
-    }
-
     public function markAsRead($id)
     {
         try {

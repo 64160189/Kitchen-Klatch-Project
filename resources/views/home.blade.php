@@ -66,7 +66,7 @@
                                     alt="{{ $randomPost2->title }}" style="max-height: 200px;">
                                 <div class="card-body">
                                     <h3 class="card-title">{{ Str::limit($randomPost2->title, 25) }}</h3>
-                                    <span class="card-text text-muted">{{ Str::limit(is_array($randomPost2->ingrediant) ? implode(', ', $randomPost2->ingrediant) : $randomPost2->ingrediant, 50) }}</span><br>
+                                    <span class="card-text text-muted">{{ Str::limit(is_array($randomPost2->ingrediant) ? implode(', ', $randomPost2->ingrediant) : $randomPost2->ingrediant, 50) }}</span><br> --}}
                                     {{-- user's data --}}
                                     <a href="{{ route('users.show', ['user' => $randomPost2->user->id]) }}"
                                         class="fw-semibold text-decoration-none text-danger">{{ Str::limit($randomPost2->user->name, 20) }}

@@ -90,7 +90,7 @@
                             @endif
                         @else
                             {{-- create post --}}
-                            <a href="/create_post" class="nav-item btn btn-outline-secondary p-2" title="โพสต์สูตรอาหาร"
+                            <a href="/create_post" class="nav-item btn btn-outline-primary p-2" title="โพสต์สูตรอาหาร"
                                 data-bs-toggle="tooltip">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor"
                                     class="bi bi-plus-circle" viewBox="0 0 16 16">
@@ -126,9 +126,10 @@
                                                     data-post-title="{{ $notification->post_title }}"
                                                     data-post-reason="{{ $notification->message }}">
                                                     {{ Str::limit($notification->message, 45) }}
-                                                    <span class="text-muted">({{ $notification->created_at->diffForHumans() }})</span>
-                                                 </a>
-                                                 
+                                                    <span
+                                                        class="text-muted">({{ $notification->created_at->diffForHumans() }})</span>
+                                                </a>
+
                                             </li>
                                         @endforeach
                                     @else
@@ -143,7 +144,7 @@
                             <li class="nav-item dropdown">
                                 <a id="navbarDropdown" class="nav-link dropdown-toggle" href="#" role="button"
                                     data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
-                                    {{ Auth::user()->name }}
+                                    {{ Str::limit(Auth::user()->name, 15) }}
                                 </a>
 
                                 <div class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
@@ -191,21 +192,61 @@
                         @guest
                         @else
                             @if (Auth::user()->is_admin)
-                                <a class="nav-link btn bg-secondary-subtle mb-1" href="{{ route('admin.home') }}">
+                                <a class="nav-link btn bg-danger-subtle mb-1" href="{{ route('admin.home') }}">
                                     {{ __('แดชบอร์ดแอดมิน') }}
                                 </a>
                             @endif
                         @endguest
                         <a class="nav-link btn bg-secondary-subtle mb-1" href="/">โพสต์ทั้งหมด</a>
-                        <a class="nav-link btn bg-secondary-subtle" href="{{ route('following.posts') }}">การติดตาม</a>
+                        <a class="nav-link btn bg-secondary-subtle"
+                            href="{{ route('following.posts') }}">โพสต์ที่ติดตาม</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link active fw-bold mt-4" aria-current="page">เกี่ยวกับคุณ</a>
+                        <a class="nav-link active fw-bold mt-3" aria-current="page">เกี่ยวกับคุณ</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link btn bg-secondary-subtle mb-1" href="{{ route('profile') }}">โปรไฟล์</a>
-                        <a class="nav-link btn bg-secondary-subtle mb-1" href="/create_post">โพสต์สูตรอาหาร</a>
+                        <a class="nav-link btn bg-primary-subtle mb-1" href="/create_post">+ โพสต์สูตรอาหาร</a>
                     </li>
+
+                    @guest
+                    @else
+                        {{-- Following Users Section --}}
+                        <li class="nav-item">
+                            <a class="nav-link active fw-bold mt-3" aria-current="page">บัญชีที่ติดตาม</a>
+                        </li>
+
+                        @php
+                            $followingUsers = auth()->check()
+                                ? auth()->user()->followings()->orderBy('id', 'desc')->limit(5)->get()
+                                : collect();
+                            $hasMoreFollowings = auth()->check() && auth()->user()->followings()->count() > 5;
+                        @endphp
+
+                        @if ($followingUsers->isNotEmpty())
+                            @foreach ($followingUsers as $followingUser)
+                                <li class="nav-item">
+                                    <a class="nav-link btn bg-secondary-subtle mb-1"
+                                        href="{{ route('users.show', ['user' => $followingUser->id]) }}">
+                                        <img class="avatar-sm rounded-circle border border-dark mt-1"
+                                            src="{{ $followingUser->getImageURL() }}" style="width: 5%;">
+                                        {{ Str::limit($followingUser->name, 20) }}
+                                        <span class="text-muted">#{{ $followingUser->id }}</span>
+                                    </a>
+                                </li>
+                            @endforeach
+                            @if ($hasMoreFollowings)
+                                <li class="nav-item">
+                                    <a class="nav-link btn bg-danger-subtle"
+                                        href="{{ route('following.users.table') }}">แสดงเพิ่มเติม</a>
+                                </li>
+                            @endif
+                        @else
+                            <li class="nav-item">
+                                <span class="nav-link text-muted">ไม่มีบัญชีที่ติดตาม</span>
+                            </li>
+                        @endif
+                    @endguest
                 </ul>
             </div>
         </div>

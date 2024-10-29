@@ -45,7 +45,7 @@
                                         รายงานสูตรอาหารนี้
                                     </button>
                                 </li>
-                            
+
                                 <li>
                                     <form action="{{ route('post.shareToFeed', $post->id) }}" method="POST">
                                         @csrf
@@ -169,9 +169,15 @@
                                 <li>ข้อมูลวิธีทำไม่ถูกต้อง</li>
                             @endif
                         </ol>
+                        <button class="btn btn-outline-danger mb-2 ms-2" data-bs-toggle="modal"
+                            data-bs-target="#howToCookModal">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-tv-fill" viewBox="0 0 16 16">
+                                <path d="M2.5 13.5A.5.5 0 0 1 3 13h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5M2 2h12s2 0 2 2v6s0 2-2 2H2s-2 0-2-2V4s0-2 2-2"/>
+                              </svg>
+                              Step by step
+                        </button>
                     </div>
                 </div>
-
 
                 <div class="mb-3">
                     @include('shared.user-card', ['user' => $post->user])
@@ -181,11 +187,7 @@
                     @include('shared.comments-box', ['post' => $post])
                 </div>
             </div>
-            <!-- right sidebar (user)
-                            <div class="col-3 post-user border">
-                                {{-- @include('shared.user-card', ['user' => $post->user]) --}}
-                            </div>
-                            -->
+
         </div>
     </div>
 
@@ -267,6 +269,62 @@
         </div>
     </div>
 
+    {{-- how to cook modal --}}
+    <div class="modal fade" id="howToCookModal" tabindex="-1" aria-labelledby="howToCookModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title" id="howToCookModalLabel">ขั้นตอนการทำ</h4>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body text-center">
+                    @if ($post->youtube_link)
+                        @php
+                            $video_id = '';
+                            // ดึง video_id จากลิงก์ YouTube แบบปกติ
+                            if (preg_match('/[\\?\\&]v=([^\\?\\&]+)/', $post->youtube_link, $matches)) {
+                                $video_id = $matches[1];
+                            }
+
+                            // ดึง video_id จากลิงก์ YouTube แบบสั้น
+                            if (
+                                !$video_id &&
+                                preg_match('/youtu\\.be\\/([^\\?\\&]+)/', $post->youtube_link, $matches)
+                            ) {
+                                $video_id = $matches[1];
+                            }
+                        @endphp
+                        @if ($video_id)
+                            <div class="embed-responsive embed-responsive-16by9">
+                                <iframe class="embed-responsive-item card-img-top"
+                                    src="https://www.youtube.com/embed/{{ $video_id }}" allowfullscreen width="100%"
+                                    height="400px"></iframe>
+                            </div>
+                        @endif
+                    @endif
+                    <div class="steps mt-3">
+                        <h4 id="stepContent">{{ $post->htc[0] }}</h4>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" id="prevStep" onclick="showPrevStep()">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-left-short" viewBox="0 0 16 16">
+                            <path fill-rule="evenodd" d="M12 8a.5.5 0 0 1-.5.5H5.707l2.147 2.146a.5.5 0 0 1-.708.708l-3-3a.5.5 0 0 1 0-.708l3-3a.5.5 0 1 1 .708.708L5.707 7.5H11.5a.5.5 0 0 1 .5.5"/>
+                          </svg>
+                          ก่อนหน้า
+                    </button>
+                    <button class="btn btn-danger" id="nextStep" onclick="showNextStep()">
+                        ถัดไป
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-right-short" viewBox="0 0 16 16">
+                            <path fill-rule="evenodd" d="M4 8a.5.5 0 0 1 .5-.5h5.793L8.146 5.354a.5.5 0 1 1 .708-.708l3 3a.5.5 0 0 1 0 .708l-3 3a.5.5 0 0 1-.708-.708L10.293 8.5H4.5A.5.5 0 0 1 4 8"/>
+                          </svg> 
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script>
         //go to user function
         function goToUser(userId) {
@@ -297,5 +355,34 @@
                 alert('Sharing is not supported in this browser.');
             }
         }
+
+        // how to cook modal step by step
+        let currentStep = 0;
+        const steps = @json($post->htc);
+
+        function showStep() {
+            document.getElementById('stepContent').innerText = steps[currentStep];
+            document.getElementById('prevStep').disabled = currentStep === 0;
+            document.getElementById('nextStep').disabled = currentStep === steps.length - 1;
+        }
+
+        function showNextStep() {
+            if (currentStep < steps.length - 1) {
+                currentStep++;
+                showStep();
+            }
+        }
+
+        function showPrevStep() {
+            if (currentStep > 0) {
+                currentStep--;
+                showStep();
+            }
+        }
+
+        // Initialize with the first step
+        document.addEventListener("DOMContentLoaded", () => {
+            showStep();
+        });
     </script>
 @endsection

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Auth;
 
 class UserController extends Controller
 {
@@ -36,8 +37,6 @@ class UserController extends Controller
 
         return response()->json($posts);
     }
-
-
 
     /**
      * Show the form for editing the specified resource.
@@ -78,7 +77,60 @@ class UserController extends Controller
         return redirect()->route('profile')->with('success', 'Profile updated successfully!');
     }
 
-    public function profile(){
+    public function profile()
+    {
         return $this->show(auth()->user());
+    }
+
+    public function showSidebar()
+    {
+        $user = Auth::user();
+        $followingUsers = $user->followings()->limit(5)->get(); // Retrieve up to 5 followed users
+        $hasMoreFollowings = $user->followings()->count() > 5; // Check if there are more than 5
+
+        return view('home', compact('followingUsers', 'hasMoreFollowings'));
+    }
+
+    public function showAllFollowings(Request $request)
+    {
+        $sort = $request->input('sort', 'id');
+        $order = $request->input('order', 'desc');
+    
+        // Get the currently authenticated user’s followings
+        $followingUsers = auth()->user()->followings()
+            ->orderBy($sort, $order)
+            ->paginate(5); // Paginate with 5 users per page
+    
+        return view('users.followingTable', compact('followingUsers'));
+    }
+    
+    public function userSearch(Request $request)
+    {
+        $sort = $request->input('sort', 'id');
+        $order = $request->input('order', 'desc');
+        $search = $request->input('search', '');
+    
+        $followingUsers = auth()->user()->followings()
+            ->where(function ($query) use ($search) {
+                $query->where('name', 'like', "%$search%")
+                      ->orWhere('id', 'like', "%$search%");
+            })
+            ->orderBy($sort, $order)
+            ->paginate(5) // Paginate with 5 users per page
+            ->appends(['sort' => $sort, 'order' => $order, 'search' => $search]);
+    
+        return view('users.followingTable', compact('followingUsers', 'sort', 'order', 'search'));
+    }    
+
+    public function userSearchPredictions(Request $request)
+    {
+        $search = $request->get('search');
+        $results = auth()->user()->followings()->where('name', 'like', "%$search%")
+            ->orWhere('id', 'like', "%$search%")
+            ->orderBy('id', 'desc')
+            ->limit(5)
+            ->get(['id', 'name']); // Fetch both 'id' and 'name'
+
+        return response()->json($results);
     }
 }

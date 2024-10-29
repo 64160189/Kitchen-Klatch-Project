@@ -15,7 +15,6 @@ use App\Http\Controllers\FollowerController;
 use App\Http\Controllers\NotificationController;
 use Illuminate\Support\Facades\Auth;
 
-
 // Route สำหรับขอรีเซ็ตรหัสผ่าน
 Route::get('password/reset', [ForgotPasswordController::class, 'showLinkRequestForm'])->name('password.request');
 Route::post('password/email', [ForgotPasswordController::class, 'sendResetLinkEmail'])->name('password.email');
@@ -67,7 +66,6 @@ Route::get('/admin/table/post/search', [AdminController::class, 'postSearch'])->
 Route::get('/admin/table/user/search/predictions', [AdminController::class, 'userSearchPredictions'])->name('user.predictions')->middleware(Isadmin::class);
 Route::get('/admin/table/post/search/predictions', [AdminController::class, 'postSearchPredictions'])->name('post.predictions')->middleware(Isadmin::class);
 Route::get('/admin/reported-posts', [AdminController::class, 'viewReportedPosts'])->name('admin.viewReportedPosts')->middleware(Isadmin::class);
-Route::delete('/post/{id}/delete', [PostController::class, 'destroy'])->name('post.delete');
 
 // Require login for creating and storing posts
 Route::middleware(['auth'])->group(function () {
@@ -95,6 +93,7 @@ Route::middleware(['auth'])->group(function () {
 // post routes
 Route::get('/posts', [postcontroller::class, 'fetchPosts']);
 Route::get('/post/{id}', [postcontroller::class, 'showFullPost'])->name('post.show');
+// require log in
 Route::middleware(['auth'])->group(function () {
     Route::get('/following', [postController::class, 'followingPosts'])->name('following.posts');
     Route::get('/following/posts', [postcontroller::class, 'fentchFollowingPosts']);
@@ -130,6 +129,13 @@ Route::post('/post/{id}/comments', [CommentController::class, 'store'])->name('p
 
 //random recipe
 Route::post('/random-recipe', [postController::class, 'randomRecipe'])->name('random.recipe');
+
+//folling users route
+Route::middleware(['auth'])->group(function () {
+    Route::get('/following/users', [UserController::class, 'showAllFollowings'])->name('following.users.table');
+    Route::get('/following/users/search', [UserController::class, 'userSearch'])->name('search.following');
+    Route::get('/following/users/search/predictions', [UserController::class, 'userSearchPredictions'])->name('following.predictions');
+});
 
 //test
 Route::get('/test/kimhun', function () {
