@@ -59,14 +59,14 @@
                                 </div>
                             </div>
                         </div>
-                        {{-- random wheel --}}
+                        {{-- random 2 --}}
                         <div class="col mb-2">
                             <div class="card post-frame" onclick="goToPost({{ $randomPost2->id }})">
                                 <img class="card-img-top" src="{{ asset('storage/' . $randomPost2->image) }}"
                                     alt="{{ $randomPost2->title }}" style="max-height: 200px;">
                                 <div class="card-body">
                                     <h3 class="card-title">{{ Str::limit($randomPost2->title, 25) }}</h3>
-                                    <span class="card-text text-muted">{{ Str::limit(is_array($randomPost2->ingrediant) ? implode(', ', $randomPost2->ingrediant) : $randomPost2->ingrediant, 50) }}</span><br> --}}
+                                    <span class="card-text text-muted">{{ Str::limit(is_array($randomPost2->ingrediant) ? implode(', ', $randomPost2->ingrediant) : $randomPost2->ingrediant, 50) }}</span><br>
                                     {{-- user's data --}}
                                     <a href="{{ route('users.show', ['user' => $randomPost2->user->id]) }}"
                                         class="fw-semibold text-decoration-none text-danger">{{ Str::limit($randomPost2->user->name, 20) }}
@@ -79,12 +79,12 @@
                     <h3>คำค้นหาแนะนำ</h3>
                     <div class="row mb-2">
                         <div class="col">
-                            <form action="{{ route('title.search') }}" method="get" id="search-cake">
-                                <input type="hidden" name="search" value="เค้ก">
+                            <form action="{{ route('title.search') }}" method="get" id="search-shrime">
+                                <input type="hidden" name="search" value="กุ้ง">
                             </form>
-                            <div class="card post-frame" onclick="document.getElementById('search-cake').submit();">
+                            <div class="card post-frame" onclick="document.getElementById('search-shrime').submit();">
                                 <div class="card-body p-2">
-                                    เค้ก
+                                    กุ้ง
                                 </div>
                             </div>
                         </div>
@@ -141,23 +141,23 @@
                             </div>
                         </div>
                         <div class="col">
-                            <form action="{{ route('title.search') }}" method="get" id="search-sauce">
-                                <input type="hidden" name="search" value="ซอส">
+                            <form action="{{ route('title.search') }}" method="get" id="search-mix">
+                                <input type="hidden" name="search" value="ยำ">
                             </form>
-                            <div class="card post-frame" onclick="document.getElementById('search-sauce').submit();">
+                            <div class="card post-frame" onclick="document.getElementById('search-mix').submit();">
                                 <div class="card-body p-2">
-                                    ซอส
+                                    ยำ
                                 </div>
                             </div>
                         </div>
                         <div class="col">
-                            <form action="{{ route('title.search') }}" method="get" id="search-weight-loss">
-                                <input type="hidden" name="search" value="ลดน้ำหนัก">
+                            <form action="{{ route('title.search') }}" method="get" id="search-chinese-noodle">
+                                <input type="hidden" name="search" value="ขนมจีน">
                             </form>
                             <div class="card post-frame"
-                                onclick="document.getElementById('search-weight-loss').submit();">
+                                onclick="document.getElementById('search-chinese-noodle').submit();">
                                 <div class="card-body p-2">
-                                    ลดน้ำหนัก
+                                    ขนมจีน
                                 </div>
                             </div>
                         </div>

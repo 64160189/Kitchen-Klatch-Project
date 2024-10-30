@@ -11,7 +11,15 @@ class UserController extends Controller
 {
     public function show(User $user)
     {
-        $posts = $user->posts()->orderBy('id', 'desc')->paginate(5);
+        $posts = $user->posts()->with('user')->orderBy('id', 'desc')->paginate(5);
+        foreach ($posts as $post) {
+            $post->ingrediant = json_decode($post->ingrediant, true);
+            $post->htc = json_decode($post->htc, true);
+        }
+    
+        // Log or inspect data for troubleshooting
+        \Log::info($posts->toArray());
+    
         return view('users.show', compact('user', 'posts'));
     }
 
@@ -95,32 +103,32 @@ class UserController extends Controller
     {
         $sort = $request->input('sort', 'id');
         $order = $request->input('order', 'desc');
-    
+
         // Get the currently authenticated user’s followings
         $followingUsers = auth()->user()->followings()
             ->orderBy($sort, $order)
             ->paginate(5); // Paginate with 5 users per page
-    
+
         return view('users.followingTable', compact('followingUsers'));
     }
-    
+
     public function userSearch(Request $request)
     {
         $sort = $request->input('sort', 'id');
         $order = $request->input('order', 'desc');
         $search = $request->input('search', '');
-    
+
         $followingUsers = auth()->user()->followings()
             ->where(function ($query) use ($search) {
                 $query->where('name', 'like', "%$search%")
-                      ->orWhere('id', 'like', "%$search%");
+                    ->orWhere('id', 'like', "%$search%");
             })
             ->orderBy($sort, $order)
             ->paginate(5) // Paginate with 5 users per page
             ->appends(['sort' => $sort, 'order' => $order, 'search' => $search]);
-    
+
         return view('users.followingTable', compact('followingUsers', 'sort', 'order', 'search'));
-    }    
+    }
 
     public function userSearchPredictions(Request $request)
     {
